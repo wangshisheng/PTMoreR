@@ -28,13 +28,14 @@ devtools::install_github("omarwagih/ggseqlogo")
 If the preparatory work has been done, you can run this tool locally as below:
 ```r
 if(!require(PTMoreR)) devtools::install_github("wangshisheng/PTMoreR")
-#Please note, as there are many databases from different species, this package is large. If you have some issues when you install it using the code above, please try download it into your own computer and install locally. And please also feel free to write a issue or an e-mail to me if you have any problem about this software.
 library(PTMoreR)
 PTMoreR_app()
 ```
 
+**Please note**, as there are many databases from different species, this package is large. If you have some issues when you install it using the code above, _please try download it into your own computer and install locally_. And please also feel free to write an issue or e-mail to me if you have any problem about this software.
+
 Then motifeR will be started as below:
-<img src="openfig.png" align="right" height="1088" width="939"/>
+<img src="openfig.png" align="center" height="1088" width="939"/>
 <br>
 
 ## Friendly suggestion
