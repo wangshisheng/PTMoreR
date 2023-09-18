@@ -31,14 +31,14 @@ if(!require(PTMoreR)) devtools::install_github("wangshisheng/PTMoreR")
 library(PTMoreR)
 PTMoreR_app()
 ```
+
 Then motifeR will be started as below:
 <img src="openfig.png" align="right" height="1088" width="939"/>
-
+<br>
 
 ## Friendly suggestion
 1. Open PTMoreR with Chrome, Mozilla Firefox, Safari or Firefox.
 2. The minimum operating system specifications are: **RAM 4GB, Hard drive 100 GB.**
-
 
 ## Contact
 You could push an issue on this github. And optionally, please feel free to sent me an e-mail if you have any question or find a bug about this tool. Thank you^_^
