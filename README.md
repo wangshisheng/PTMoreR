@@ -32,7 +32,7 @@ library(PTMoreR)
 PTMoreR_app()
 ```
 Then motifeR will be started as below:
-<img src="openfig.png" align="right" height="1000" width="863"/>
+<img src="openfig.png" align="right" height="1088" width="939"/>
 
 
 ## Friendly suggestion
