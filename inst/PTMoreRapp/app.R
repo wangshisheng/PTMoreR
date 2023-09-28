@@ -2228,11 +2228,11 @@ server<-shinyServer(function(input, output, session){
     blastresoutx$Center.aa.match<-Center.aa.match
     blastresoutx$Window.similarity<-Window.similarity
     if(input$centeraamatach==1){
-      blastresoutx1<-blastresoutx[blastresoutx$Center.aa.match=="Exact",]
+      blastresoutx1<-blastresoutx
     }else if(input$centeraamatach==2){
       blastresoutx1<-blastresoutx[grep("Exact|Fuzzy",blastresoutx$Center.aa.match),]
     }else{
-      blastresoutx1<-blastresoutx
+      blastresoutx1<-blastresoutx[blastresoutx$Center.aa.match=="Exact",]
     }
     blastresoutx1<-blastresoutx1[blastresoutx1$Window.similarity>=input$seqmatachsimilar,]
     blastresoutx1
