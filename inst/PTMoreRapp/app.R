@@ -394,7 +394,7 @@ ui<-renderUI(
             div(id="evalueyuzhi_div",numericInput("evalueyuzhi",h5("2. Expectation value (E) threshold:"),value = 0.00001)),
             bsTooltip("evalueyuzhi_div",'Expectation value (E) threshold for saving hits.',
                       placement = "bottom",options = list(container = "body")),
-            div(id="blastbesthit_div",selectInput("blastbesthit",h5("3. The criterion for best last hit:"),choices = c("Percentage"=1,"Longest alignment length"=2))),
+            div(id="blastbesthit_div",selectInput("blastbesthit",h5("3. The criterion for the best BLAST hit:"),choices = c("Percentage"=1,"Longest alignment length"=2))),
             bsTooltip("blastbesthit_div",'This tool performs a BLAST search between query and subject sequences and returns only the best hit based on the selected criterion. “Percentage” means If e-values are identical then the hit with the largest matching percentage is chosen. “Longest alignment length” means If e-values are identical then the hit with the longest alignment length is chosen.',
                       placement = "right",options = list(container = "body")),
             #div(id="similaryuzhi_div",numericInput("similaryuzhi",h5("2. Expectation value (E) threshold:"),value = 70)),
@@ -2083,14 +2083,14 @@ server<-shinyServer(function(input, output, session){
       readfastaqnames<-unlist(lapply(names(datafasta),function(x) strsplit(x,"\\ ")[[1]][1]))
     }
     datafasta2<-blastres1outx$datafasta2
-    datafastahuman<-readAAStringSet(datafasta2)
+    datafastahuman<<-readAAStringSet(datafasta2)
     readfastasubjnames<-unlist(lapply(names(datafastahuman),function(x){
       strsplit(strsplit(x," ")[[1]][1],"\\|")[[1]][2]
     }))
     blastseqlist<<-blastres2out()
     datasuiqiallx2<-datasuiqiallxx<<-seqduiqievent()
     datasuiqiallxx2<-separate_rows(datasuiqiallxx,6:8,sep = "::")
-    datasuiqiallx<-datasuiqiall<-unique(separate_rows(datasuiqiallxx2,3:8,sep = ";"))
+    datasuiqiallx<-datasuiqiall<<-unique(separate_rows(datasuiqiallxx2,3:8,sep = ";"))
     datasuiqiallx$PRO.CombinedID<-paste0(datasuiqiall$PRO.from.Database,"_",datasuiqiall$Center.amino.acid,
                                          datasuiqiall$PROindex.from.Database)
     Center.amino.acids.Other<-Seqwindows.Other<-PRO.from.Other<-PROindex.from.Other<-vector()
@@ -2118,48 +2118,68 @@ server<-shinyServer(function(input, output, session){
             alignquerydfhengxian1<-grep("-",alignquerydf1)
             alignquerydfhengxian2<-grep("-",alignquerydf2)
             if(length(alignquerydfhengxian1)>0){
-              alignquerydf3<-alignquerydf2[-alignquerydfhengxian1]
-              humanhenggangindex<-which(alignquerydf3[promainindex]=="-")
-              if(length(humanhenggangindex)>0){
-                promainindex<-promainindex[-humanhenggangindex]
-                if(length(promainindex)>0){
-                  blaseprocenter<-paste(alignquerydf3[promainindex],collapse=";")
-                }else{
-                  blaseprocenter<-NA
-                }
-              }else{
-                blaseprocenter<-paste(alignquerydf3[promainindex],collapse=";")
+              #alignquerydf3<-alignquerydf2[-alignquerydfhengxian1]
+              #humanhenggangindex<-which(alignquerydf3[promainindex]=="-")
+              #if(length(humanhenggangindex)>0){
+              #  promainindex<-promainindex[-humanhenggangindex]
+              #  if(length(promainindex)>0){
+              #    blaseprocenter<-paste(alignquerydf3[promainindex],collapse=";")
+              #  }else{
+              #    blaseprocenter<-NA
+              #  }
+              #}else{
+              #  blaseprocenter<-paste(alignquerydf3[promainindex],collapse=";")
+              #}
+              centeraas1<-grep(centeraas,alignquerydf1)
+              centeraas2<-centeraas1[centeraas1>=promainindex]
+              caai<-1
+              repeat{
+                x1<-sum(alignquerydfhengxian1<=centeraas2[caai])
+                blaseproindex1<-centeraas2[caai]
+                if((centeraas2[caai]-x1)==promainindex) break
+                caai<-caai+1
               }
-              
-              blaseproindex<-unlist(lapply(promainindex,function(x){
-                x1<-sum(alignquerydfhengxian1<x)
-                if(length(alignquerydfhengxian2)>0){
-                  x2<-sum(alignquerydfhengxian2<x1+x)
-                  x1+x-x2
-                }else{
-                  x1+x
-                }
-              }))
+              if(length(alignquerydfhengxian2)>0){
+                blaseproindex<-blaseproindex1-sum(alignquerydfhengxian2<=blaseproindex1)
+              }else{
+                blaseproindex<-blaseproindex1
+              }
+              blaseprocenter<-alignquerydf2[blaseproindex1]
+              #blaseproindex<-unlist(lapply(promainindex,function(x){
+              #  #x1<-sum(alignquerydfhengxian1<x)
+              #  if(length(alignquerydfhengxian2)>0){
+              #    x2<-sum(alignquerydfhengxian2<x1+x)
+              #    x1+x-x2
+              #  }else{
+              #    x1+x
+              #  }
+              #}))
             }else{
-              humanhenggangindex<-which(alignquerydf2[promainindex]=="-")
-              if(length(humanhenggangindex)>0){
-                promainindex<-promainindex[-humanhenggangindex]
-                if(length(promainindex)>0){
-                  blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
-                }else{
-                  blaseprocenter<-NA
-                }
+              #humanhenggangindex<-which(alignquerydf2[promainindex]=="-")
+              #if(length(humanhenggangindex)>0){
+              #  promainindex<-promainindex[-humanhenggangindex]
+              #  if(length(promainindex)>0){
+              #    blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
+              #  }else{
+              #    blaseprocenter<-NA
+              #  }
+              #}else{
+              #  blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
+              #}
+              blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
+              if(length(alignquerydfhengxian2)>0){
+                blaseproindex<- promainindex-sum(alignquerydfhengxian2<=promainindex)
               }else{
-                blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
+                blaseproindex<- promainindex
               }
-              blaseproindex<-unlist(lapply(promainindex,function(x){
-                if(length(alignquerydfhengxian2)>0){
-                  x2<-sum(alignquerydfhengxian2<x)
-                  x-x2
-                }else{
-                  x
-                }
-              }))
+              #blaseproindex<-unlist(lapply(promainindex,function(x){
+              #  if(length(alignquerydfhengxian2)>0){
+              #    x2<-sum(alignquerydfhengxian2<=x)
+              #    x-x2
+              #  }else{
+              #    x
+              #  }
+              #}))
             }
             blastpepwindows<-unlist(lapply(blaseproindex,function(x){
               indexjian1<-x-danlength
