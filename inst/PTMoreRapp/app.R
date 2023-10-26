@@ -2141,10 +2141,13 @@ server<-shinyServer(function(input, output, session){
               }
               if(length(alignquerydfhengxian2)>0){
                 blaseproindex<-blaseproindex1-sum(alignquerydfhengxian2<=blaseproindex1)
+                #blaseprocenter<-alignquerydf2[-alignquerydfhengxian2][blaseproindex]
               }else{
                 blaseproindex<-blaseproindex1
+                #blaseprocenter<-alignquerydf2[blaseproindex]
               }
-              blaseprocenter<-alignquerydf2[blaseproindex1]
+              blaseproindex2<-blaseproindex1
+              #blaseprocenter<-alignquerydf2[blaseproindex]
               #blaseproindex<-unlist(lapply(promainindex,function(x){
               #  #x1<-sum(alignquerydfhengxian1<x)
               #  if(length(alignquerydfhengxian2)>0){
@@ -2166,12 +2169,16 @@ server<-shinyServer(function(input, output, session){
               #}else{
               #  blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
               #}
-              blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
+              #blaseprocenter<-paste(alignquerydf2[promainindex],collapse=";")
               if(length(alignquerydfhengxian2)>0){
-                blaseproindex<- promainindex-sum(alignquerydfhengxian2<=promainindex)
+                blaseproindex<-promainindex-sum(alignquerydfhengxian2<=promainindex)
+                #blaseprocenter<-alignquerydf2[-alignquerydfhengxian2][blaseproindex]
               }else{
-                blaseproindex<- promainindex
+                blaseproindex<-promainindex
+                #blaseprocenter<-alignquerydf2[blaseproindex]
               }
+              blaseproindex2<-promainindex
+              #blaseprocenter<-alignquerydf2[blaseproindex]
               #blaseproindex<-unlist(lapply(promainindex,function(x){
               #  if(length(alignquerydfhengxian2)>0){
               #    x2<-sum(alignquerydfhengxian2<=x)
@@ -2181,23 +2188,29 @@ server<-shinyServer(function(input, output, session){
               #  }
               #}))
             }
-            blastpepwindows<-unlist(lapply(blaseproindex,function(x){
+            blastpepwindows<-unlist(lapply(blaseproindex2,function(x){#blaseproindex
               indexjian1<-x-danlength
               indexjian2<-x+danlength
               if(indexjian1<=0){
                 xhx1<-paste(rep("_",abs(indexjian1)+1),collapse ="")
-                xhx2<-stri_sub(subjectpro,from = 0,to=indexjian2)
+                xhx2<-stri_sub(alignquerydf[2],from = 0,to=indexjian2)#subjectpro
                 xhx3<-paste0(xhx1,xhx2)
               }
-              else if(indexjian2>seqnchar){
-                xhx1<-paste(rep("_",(indexjian2-seqnchar)),collapse="")
-                xhx2<-stri_sub(subjectpro,from = indexjian1,to=seqnchar)
+              else if(indexjian2>nchar(alignquerydf[2])){#seqnchar
+                xhx1<-paste(rep("_",(indexjian2-nchar(alignquerydf[2]))),collapse="")#seqnchar
+                xhx2<-stri_sub(alignquerydf[2],from = indexjian1,to=nchar(alignquerydf[2]))#subjectpro seqnchar
                 xhx3<-paste0(xhx2,xhx1)
               }
               else{
-                xhx3<-stri_sub(subjectpro,from = indexjian1,to=indexjian2)
+                xhx3<-stri_sub(alignquerydf[2],from = indexjian1,to=indexjian2)#subjectpro
               }
             }))
+            blaseprocenter<-alignquerydf2[blaseproindex2]
+            if(blaseprocenter!="-"){
+              blaseproindex<-blaseproindex
+            }else{
+              blaseproindex<-0
+            }
             Center.amino.acids.Other[i]<-blaseprocenter#ifelse(length(blaseprocenter)>0,blaseprocenter,NA)
             Seqwindows.Other[i]<-paste(blastpepwindows,collapse = ";")
             PRO.from.Other[i]<-queryindex2#strsplit(queryindex2,"\\|")[[1]][2]
