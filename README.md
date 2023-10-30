@@ -1,4 +1,4 @@
-# PTMoreR<img src="PTMoreR_logo_new.png" align="right" height="200" width="200"/>
+# PTMoreR<img src="PTMoreR_Logo.png" align="right" height="200" width="200"/>
 PTMoreR enables a motif-centric proteomic mapping and annotation of post-translational modifications across mammalian species
 
 ## Brief Description
