@@ -1204,15 +1204,17 @@ server<-shinyServer(function(input, output, session){
   })
   #show data
   output$metabopathspecies<-renderUI({
-    metabopath_spedf<-read.csv("metabopath-species.csv",header = T,stringsAsFactors = F)
+    metabopath_spedf1<-read.csv("metabopath-species.csv",header = T,stringsAsFactors = F)
+    metabopath_spedf<-metabopath_spedf1[-2,]
     metabopath_spedf_paste<-paste(metabopath_spedf$Organism.ID,metabopath_spedf$Organism,sep = "-")
     selectizeInput('metabopathspeciesselect', h5('Species:'), choices =metabopath_spedf_paste,options = list(maxOptions = 6000))
   })
   output$metabopathspecies2<-renderUI({
-    metabopath_spedf<-read.csv("metabopath-species.csv",header = T,stringsAsFactors = F)
+    metabopath_spedfx<-read.csv("metabopath-species.csv",header = T,stringsAsFactors = F)
+    metabopath_spedf<-metabopath_spedfx[c(2,1,3:nrow(metabopath_spedfx)),]
     metabopath_spedf_paste2<-paste(metabopath_spedf$Organism.ID,metabopath_spedf$Organism,sep = "-")
     selectizeInput('metabopathspeciesselect2', h5('Species:'), choices =metabopath_spedf_paste2,
-                   selected=metabopath_spedf_paste2[2],options = list(maxOptions = 6000))
+                   options = list(maxOptions = 6000))#selected=metabopath_spedf_paste2,
   })
   #######
   exampledataout<-reactive({
