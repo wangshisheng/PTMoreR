@@ -38,7 +38,7 @@ Then motifeR will be started as below:
 <img src="openfig.png" align="center" height="1088" width="939"/>
 <br>
 
-## Friendly suggestion
+## Friendly suggestions
 1. Open PTMoreR with Chrome, Mozilla Firefox, Safari or Firefox.
 2. The minimum operating system specifications are: **RAM 4GB, Hard drive 100 GB.**
 3. The monitor resolution (>= 1920x1080) is better.
