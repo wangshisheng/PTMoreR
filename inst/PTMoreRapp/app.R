@@ -144,7 +144,7 @@ ui<-renderUI(
                 id = 'span1',
                 `data-toggle` = "tooltip",
                 title = '
-                In this part, users can upload their own peptide sequences with modification (e.g. phosphorylation). The example data can be found when users click "Load example data" below.
+                In this part, users can upload their own peptide sequences with modification (e.g. phosphorylation). The example data were obtained from Rat and can be found when users click "Load example data" below.
                 ',
                 tags$span(class = "glyphicon glyphicon-question-sign")
               )
@@ -204,7 +204,7 @@ ui<-renderUI(
             ),
             conditionalPanel(
               condition = "input.loadseqdatatype==2",
-              downloadButton("loadseqdatadownload1","1. Download example data",style="color: #fff; background-color: #6495ED; border-color: #6495ED")
+              downloadButton("loadseqdatadownload1","1. Download example data from Rat",style="color: #fff; background-color: #6495ED; border-color: #6495ED")
             ),
             tags$hr(style="border-color: grey;"),
             selectInput("origidatatype",h5("2. Data type:"),choices = c("Normal","MaxQuant","Spectronaut")),
@@ -1138,10 +1138,10 @@ server<-shinyServer(function(input, output, session){
         imgwidth<-150
       }
       else if(screenwidth>1024 & screenwidth<=1440){
-        imgwidth<-250
+        imgwidth<-230
       }
       else{
-        imgwidth<-400
+        imgwidth<-320
       }
     }
     
@@ -1161,22 +1161,34 @@ server<-shinyServer(function(input, output, session){
               HTML("<b>PTMoreR</b> is a web-based tool, which possesses the core functions, including:")),
           div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:120%;margin-top:5px",
               #HTML("<br />"),
-              HTML("&nbsp;&nbsp;&nbsp;&nbsp;1. Mapping the PTM site and protein sequences and identifiers between non-human species and H. sapiens;")),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;1. Mapping the PTM sites and protein sequences between any two species;")),
           div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:120%;margin-top:5px",
               #HTML("<br />"),
-              HTML("&nbsp;&nbsp;&nbsp;&nbsp;2. Calculating sequence window similarity and allowing thresholds of similarity filtering for motif mapping;")),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;2. Calculating sequence window similarity and allowing filtering thresholds of sequence similarity during the mapping;")),
           div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:120%;margin-top:5px",
               #HTML("<br />"),
-              HTML("&nbsp;&nbsp;&nbsp;&nbsp;3. Offering more flexible annotation based on kinase-substrate databases (e.g. PhosphoSitePlus) and network plots;")),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;3. Performing PTM site-specific enrichment analysis and offering flexible annotations based on kinase-substrate database and network plots;")),
           div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:120%;margin-top:5px",
               #HTML("<br />"),
-              HTML("&nbsp;&nbsp;&nbsp;&nbsp;4. Visualizing the expression of modification sites on interacting proteins on the basis of public or user-uploaded protein-protein interaction data.")),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;4. Visualizing the regulation of modification sites on the basis of protein-protein interaction data.")),
           div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:120%;margin-top:15px",
               #HTML("<br />"),
               HTML("In addition, this tool supports both online access and local installation. The source codes and installation instructions can be available in the GitHub repository: <a href='https://github.com/wangshisheng/PTMoreR' target='_blank'>https://github.com/wangshisheng/PTMoreR</a> under an MIT license.")),
           div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;margin-top:15px;font-size:120%",
               #HTML("<br />"),
               HTML("Finally, PTMoreR is developed by <a href='https://shiny.rstudio.com/' target='_blank'>R shiny (Version 1.6.0)</a>, and is free and open to all users with no login requirement. It can be readily accessed by all popular web browsers including Google Chrome, Mozilla Firefox, Safari and Internet Explorer 10 (or later), and so on. We would highly appreciate that if you could send your feedback about any bug or feature request to Shisheng Wang at <u>shishengwang@wchscu.cn</u>.")),
+          div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;margin-top:15px;font-size:120%",
+              #HTML("<br />"),
+              HTML("<em>Friendly suggestions</em>:")),
+          div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:110%;margin-top:5px",
+              #HTML("<br />"),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;a) Open PTMoreR with Chrome, Mozilla Firefox, Safari or Firefox;")),
+          div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:110%;margin-top:5px",
+              #HTML("<br />"),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;b) The minimum operating system specifications are: RAM 4GB, Hard drive 100 GB;")),
+          div(style="width:fit-content;width:-webkit-fit-content;width:-moz-fit-content;font-size:110%;margin-top:5px",
+              #HTML("<br />"),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;c) The monitor resolution (>= 1920x1080) is better.")),
           div(style="text-align:center;margin-top:20px;font-size:140%;color:darkgreen",
               HTML("<br />"),
               HTML("^_^ <em>Enjoy yourself in PTMoreR</em> ^_^")),
