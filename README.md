@@ -21,8 +21,8 @@ if(!require(pacman)) install.packages("pacman")
 pacman::p_load(shiny, shinyjs, shinyWidgets, shinyBS, DT, data.table, openxlsx, Biostrings, GenomicFeatures, rtracklayer, stringi, stringr, ggsci, ggplot2, ggrepel, msa, tidyr, ggraph, graphlayouts, scales, impute, igraph, scatterpie, plotfunctions, mapplots, devtools)
 #Then install some packages from GitHub, as below:
 devtools::install_github("drostlab/metablastr", build_vignettes = TRUE, dependencies = TRUE)
-devtools::install_github('omarwagih/rmotifx')
-devtools::install_github("omarwagih/ggseqlogo")
+install.packages("https://github.com/wangshisheng/motifeR/raw/master/rmotifx_1.0.tar.gz", repos = NULL, type = "source")
+install.packages("https://github.com/wangshisheng/motifeR/raw/master/ggseqlogo_0.1.tar.gz", repos = NULL, type = "source")
 ```
 
 If the preparatory work has been done, you can run this tool locally as below:
