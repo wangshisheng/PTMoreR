@@ -1,0 +1,33 @@
+Package: PTMoreR
+Type: Package
+Title: PTMoreR enables a motif-centric proteomic mapping and annotation of post-translational modifications across mammalian species
+Version: 1.0.0
+Author: Shisheng Wang
+Maintainer: Shisheng Wang <shishengwang@wchscu.cn>
+Description: PTMoreR is a free, user-friendly and comprehensive web software, can provide five main functions (sequence pre-alignment, blast to human sequences, motif discovery, kinase-substrate analysis, interaction plot) to help users analyze their non-human sequence data.
+Imports:
+  shiny,
+  shinyBS,
+  shinyjs,
+  DT,
+  gdata,
+  knitr,
+  ggplot2,
+  ggsci,
+  openxlsx,
+  data.table,
+  Biostrings,
+  stringi,
+  stringr,
+  rmotifx,
+  ggrepel,
+  ggseqlogo,
+  igraph,
+  ggraph,
+  graphlayouts,
+  scales,
+  msa
+Depends: R (>= 3.5.0)
+License: Commercial use is not permitted.
+Encoding: UTF-8
+LazyData: true
