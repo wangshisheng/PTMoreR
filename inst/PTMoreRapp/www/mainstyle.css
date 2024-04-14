@@ -1,0 +1,52 @@
+.content{
+  background-color: white;
+}
+.skin-blue .main-header .logo {
+    padding: 0;
+    background-color: black;
+    color: #fff;
+    border-bottom: 0 solid transparent;
+    font-size: 25px;
+    font-weight:bold;
+}
+.skin-blue .main-header .navbar {
+    background-color: black;
+    font-weight:bold;
+}
+.skin-blue .main-sidebar {
+    background-color: #302F2F;
+    font-size: 18px;
+    line-height: 1.42857143;
+    color: #ebebeb;
+}
+.left-side, .main-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 50px;
+    min-height: 100%;
+    width: 230px;
+    z-index: 810;
+    -webkit-transition: -webkit-transform .3s ease-in-out,width .3s ease-in-out;
+    -moz-transition: -moz-transform .3s ease-in-out,width .3s ease-in-out;
+    -o-transition: -o-transform .3s ease-in-out,width .3s ease-in-out;
+    transition: transform .3s ease-in-out,width .3s ease-in-out;
+}
+.sidebar-menu{
+  margin-top: 20px;
+}
+.box.box-solid.box-primary {
+  border-width: 1px;
+    border-style: solid;
+    border-color: #666666;
+    border-image: initial;
+}
+.box.box-solid.box-primary>.box-header {
+    color: #fff;
+    background:#666666;
+    background-color: #666666;
+}
+#barploterrorplot{
+  text-align: center;
+}
+
