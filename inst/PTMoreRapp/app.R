@@ -21,7 +21,7 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Home", tabName = "homeui", icon = icon("home")),
       #menuItem("1. 上传数据", tabName = "uploaddata", icon = icon("file")),#th
-      menuItem("Data Processing", tabName = "tiaojiecanshu", icon = icon("dashboard")),#cog
+      menuItem("Assembled Functions", tabName = "tiaojiecanshu", icon = icon("dashboard")),#cog
       menuItem("Help", tabName = "cankaoziliao", icon = icon("info-circle"))
     )
   ),
@@ -100,9 +100,9 @@ ui <- dashboardPage(
                 width = 12, title = strong("User Guide"), 
                 status = "warning", solidHeader = TRUE, collapsible = TRUE, 
                 collapsed = FALSE, closable = FALSE, 
-                h4("There are 6 steps to process data in PTMoreR:"),
+                h4("There are 6 steps to process data in PTMoreR, please do it step by step:"),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 1. Import Sequence Data.</b> In this part, users can upload their own peptide sequences with modification (e.g. phosphorylation). The example data were obtained from Rat and can be found when users click 'Load example data' below.<br />")), 
-                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 2. Pre-alignment.</b> This step aligns those peptide sequences with the background database (protein sequences) and force the modified sites/residues to be central sites, then users can get the standard peptide window sequences.<br />")), 
+                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 2. Pre-alignment.</b> This step aligns those peptide sequences with the background database (protein sequences) and force the modified sites/residues to be central sites, then users can get the standard peptide window sequences (e.g. 15 amino acid length by default).<br />")), 
                 #div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to the other species.</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which can be chosen below.<br />")), 
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to Human.</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which is Human by default.<br />")),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 4. Motif Enrichment and Plot.</b> This step will find overrepresented sequence motifs for uploaded peptides and blasted peptides respectively, then visualize them. Uploaded peptides here means those modified peptides uploaded directly by users. 
@@ -179,14 +179,14 @@ ui <- dashboardPage(
                     bsTooltip("centralresfuhao_div",'The label represents modification, users can use some label they like, such as "#", "@", where "#" is recommended.',
                               placement = "right",options = list(container = "body")),
                     div(id="minseqs_div",numericInput("minseqs",h5("5. Width:"),value = 7)),
-                    bsTooltip("minseqs_div",'It is the number of left/right side characters of the central residue. The .is "7" but can be changed by the user.',
+                    bsTooltip("minseqs_div",'It is the number of left/right side characters of the central residue. For example, the default is "7", which means every uploaded peptide with different lengths will be aligned into a standard window (i.e. 15 amino acids width here) in the next "Step 2. Pre-alignment".',
                               placement = "right",options = list(container = "body")),
                     #tags$hr(style="border-color: grey;"),
                     conditionalPanel(
                       condition = "input.loadseqdatatype==1",
                       div(id="xuanzebgdatabase_div",radioButtons("xuanzebgdatabase",label=h5("6. Select or upload the protein sequences (.fasta file):"),choices = list("6.1. Select" = 1,"6.2. Upload"=2),
                                                                  selected = 1,inline = TRUE)),
-                      bsTooltip("xuanzebgdatabase_div",'Here means you should select or upload the whole protein sequences from which you obtain the uploaded peptide sequences. "Select" means users can directly select one species whose protein sequences have been built in PTMoreR; "Upload" means users can upload their own protein sequences, which can be downloaded from some public database, such as UniProt (http://www.uniprot.org).',
+                      bsTooltip("xuanzebgdatabase_div",'Here means you should select or upload the whole protein sequences from which you obtain the uploaded peptide sequences. "Select" means users can directly select one species and this tool has been connected to UniProt via API so that any species is possible without needing to download data; "Upload" means users can upload their own protein sequences, which can be downloaded from some public database, such as UniProt (http://www.uniprot.org).',
                                 placement = "right",options = list(container = "body")),
                       conditionalPanel(
                         condition = "input.xuanzebgdatabase==1",
@@ -297,12 +297,20 @@ ui <- dashboardPage(
                     div(id="centeraamatach_div",selectInput("centeraamatach",h5("3. Central amino acid matching degree:"),choices = c("Fuzzy matching"=1,"All"=2,"Exact matching"=3))),
                     bsTooltip("centeraamatach_div",'The matching degree of central amino acids (CAAs) when the uploaded peptides are blasted to Human protein sequences. 1. Exact matching: The CAAs are same, for example, the CAA is "S" in the uploaded peptides and the CAA is also "S" in the blasted sequence. 2. Fuzzy matching: For example, the CAA is "S" in the uploaded peptides and the CAA could be "S", "T", or "Y" in the blasted sequence. All: Reporting all results.',
                               placement = "right",options = list(container = "body")),
-                    div(id="seqmatachsimilar_div",numericInput("seqmatachsimilar",h5("4. Sequence windows similarity:"),value = 8)),
-                    bsTooltip("seqmatachsimilar_div",'The similarity of sequence windows between the uploaded peptides and the blasted peptides. For example, there are 15 amino acids in one sequence window, 7 here means there are 7 amino acids are exactly same (amino acids names and positions in both windows are all same).',
-                              placement = "right",options = list(container = "body")),
-                    div(id="blosum50_div",numericInput("blosum50yuzhi",h5("5. BLOSUM50 Score:"),value = 0)),
-                    bsTooltip("blosum50_div",'BLOSUM50 means that the matrix was built using blocks of aligned sequences that had no more than 50% identity, which is used to score alignments between evolutionarily divergent protein sequences.',
-                              placement = "right",options = list(container = "body")),
+                    checkboxInput("seqmatachsimilarif","4. Whether setting sequence windows similarity (SWS)?",TRUE),
+                    conditionalPanel(
+                      condition = "input.seqmatachsimilarif==true",
+                      div(id="seqmatachsimilar_div",numericInput("seqmatachsimilar",h5("4.1. SWS threshold:"),value = 8)),
+                      bsTooltip("seqmatachsimilar_div",'The similarity of sequence windows between the uploaded peptides and the blasted peptides. For example, there are 15 amino acids in one sequence window, 7 here means there are 7 amino acids are exactly same (amino acids names and positions in both windows are all same).',
+                                placement = "right",options = list(container = "body"))
+                    ),
+                    checkboxInput("blosum50yuzhiif","5. Whether setting BLOSUM50 Score?",FALSE),
+                    conditionalPanel(
+                      condition = "input.blosum50yuzhiif==true",
+                      div(id="blosum50_div",numericInput("blosum50yuzhi",h5("5.1. BLOSUM50 Score threshold:"),value = 50)),
+                      bsTooltip("blosum50_div",'BLOSUM50 means that the matrix was built using blocks of aligned sequences that had no more than 50% identity, which is used to score alignments between evolutionarily divergent protein sequences.',
+                                placement="right",options=list(container="body"))
+                    ),
                     tags$hr(style="border-color: grey;"),
                     actionButton("blastbtn_seqalign","Calculate",icon("paper-plane"),
                                  style="color: #fff; background-color: #337ab7; border-color: #2e6da4"))
@@ -457,12 +465,12 @@ ui <- dashboardPage(
                     ),
                     conditionalPanel(
                       condition = 'input.motiffujidfxuanze==3',
-                      h5("Hints: Herein, uers should type in a protein name/uniprot id with a phosphosite (e.g. AKT1_S126 or P31749_S126) below. Then PTMoreR will search the sequences across mammalian species aligned and calculate PWM (named PWM_input). After that, this tool will calculate PWMs for each human kinase in PhosphoSitePlus database (named PWM_PsP). Finally, this tool will evaluate the cosine similarity between PWM_input and PWM_PsP."),
+                      h5("Hints: Herein, uers should type in a protein name/uniprot id with a phosphosite (e.g. AKTS1_T246 or Q96B36_T246) below. Then PTMoreR will search the sequences across mammalian species aligned and calculate PWM (named PWM_input). After that, this tool will calculate PWMs for each human kinase in PhosphoSitePlus database (named PWM_PsP). Finally, this tool will evaluate the cosine similarity between PWM_input and PWM_PsP."),
                       hr(),
                       fluidRow(
                         column(
                           8,
-                          textInput("prophosite","Please type in a protein with a phosphosite:",value = "",placeholder="AKT1_S126")
+                          textInput("prophosite","Please type in a protein with a phosphosite:",value = "",placeholder="AKTS1_T246")
                         ),
                         column(
                           4,
@@ -473,17 +481,24 @@ ui <- dashboardPage(
                       radioButtons(
                         "motifsimilarityxz",
                         label = NULL,
-                        choices = list("3.1 Aligned results across mammalian species" = 1,"3.2 PWM similarity"=2),
+                        choices = list("3.1 Motif plot based on aligned results across 129 mammalian species" = 1,
+                                       "3.2 Aligned table" = 2,
+                                       "3.3 PWM similarity"=3),
                         selected = 1,
                         inline = TRUE
                       ),
                       conditionalPanel(
                         condition = 'input.motifsimilarityxz==1',
+                        downloadButton("phositealignplotdl","Download"),
+                        hidden(div(id="hiddendivv1",style = 'overflow-x: scroll',withSpinner(plotOutput('phositealignplot'))))
+                      ),
+                      conditionalPanel(
+                        condition = 'input.motifsimilarityxz==2',
                         downloadButton("phositealigndfdl","Download"),
                         hidden(div(id="hiddendiv7",style = 'overflow-x: scroll',withSpinner(dataTableOutput('phositealigndf'))))
                       ),
                       conditionalPanel(
-                        condition = 'input.motifsimilarityxz==2',
+                        condition = 'input.motifsimilarityxz==3',
                         downloadButton("pwmsimilaritydfdl","Download"),
                         hidden(div(id="hiddendiv8",style = 'overflow-x: scroll',withSpinner(dataTableOutput('pwmsimilaritydf'))))
                       )
@@ -2022,8 +2037,12 @@ server <- function(input, output,session) {
     }else{
       blastresoutx1<-blastresoutx[blastresoutx$Center.aa.match=="Exact",]
     }
-    blastresoutx1<-blastresoutx1[blastresoutx1$Window.similarity>=input$seqmatachsimilar,]
-    blastresoutx1<-blastresoutx1[blastresoutx1$BLOSUM50.Score>=input$blosum50yuzhi,]
+    if(input$seqmatachsimilarif){
+      blastresoutx1<-blastresoutx1[blastresoutx1$Window.similarity>=input$seqmatachsimilar,]
+    }
+    if(input$blosum50yuzhiif){
+      blastresoutx1<-blastresoutx1[blastresoutx1$BLOSUM50.Score>=input$blosum50yuzhi,]
+    }
     blastresoutx1
   })
   observeEvent(
@@ -2626,14 +2645,15 @@ server <- function(input, output,session) {
   })
   observeEvent(
     input$prophosite_btn,{
+      shinyjs::show(id = "hiddendivv1", anim = FALSE)
       shinyjs::show(id = "hiddendiv7", anim = FALSE)
       shinyjs::show(id = "hiddendiv8", anim = FALSE)
       phositealigndfout<-reactive({
-        uniprotkb_9606_reviewed<-phositealigndfout1()$uniprotkb_9606_reviewed
-        eukyblastreslist.nbtdf<-phositealigndfout1()$eukyblastreslist.nbtdf
+        uniprotkb_9606_reviewed<<-phositealigndfout1()$uniprotkb_9606_reviewed
+        eukyblastreslist.nbtdf<<-phositealigndfout1()$eukyblastreslist.nbtdf
         withProgress(message = 'Searching...',min = 0, max = 1, style = "notification",{
           shiny::incProgress(1/2, detail = "")
-          checkid<-isolate(toupper(input$prophosite))
+          checkid<<-isolate(toupper(input$prophosite))
           checkid1<-strsplit(checkid,"_")[[1]]
           checkidindex<-unique(c(which(uniprotkb_9606_reviewed$Entry==toupper(checkid1[1])),
                                  which(uniprotkb_9606_reviewed$Entry.Name==toupper(checkid1[1]))))
@@ -2660,8 +2680,48 @@ server <- function(input, output,session) {
         })
         pipeidf
       })
+      ##
+      output$phositealignplot<-renderPlot({
+        library(ggplot2)
+        library(ggseqlogo)
+        phositdf<<-phositealigndfout()
+        if(ncol(phositdf)==1){
+          plot(c(0, 1), c(0, 1),type='n', xlab='', ylab='', main='', xaxt='n',yaxt='n')
+          text(0.5, 0.5, 'nothing plot here!', cex=2)
+        }else{
+          enrichseq<-phositdf$Seqwindows.Other
+          ggseqlogo(enrichseq, method="probability")+
+            scale_x_discrete(limits=as.character(-input$minseqs:input$minseqs))+
+            theme(axis.text=element_text(size=14),strip.text = element_text(size=18),
+                  axis.title=element_text(size=16),legend.text = element_text(size = 12),
+                  legend.title = element_text(size = 13))
+        }
+      })
+      phositealignplotout<-reactive({
+        phositdf<<-phositealigndfout()
+        if(ncol(phositdf)==1){
+          plot(c(0, 1), c(0, 1),type='n', xlab='', ylab='', main='', xaxt='n',yaxt='n')
+          text(0.5, 0.5, 'nothing plot here!', cex=2)
+        }else{
+          enrichseq<-phositdf$Seqwindows.Other
+          ggseqlogo(enrichseq, method="probability")+
+            scale_x_discrete(limits=as.character(-input$minseqs:input$minseqs))+
+            theme(axis.text=element_text(size=14),strip.text = element_text(size=18),
+                  axis.title=element_text(size=16),legend.text = element_text(size = 12),
+                  legend.title = element_text(size = 13))
+        }
+      })
+      output$phositealignplotdl<-downloadHandler(
+        filename = function(){paste("Motifplot_PhosphoSite.across.129.species.",usertimenum,".pdf",sep="")},
+        content = function(file){
+          pdf(file, width = motifplot_height()/100,height = motifplot_height()/100+3)
+          print(phositealignplotout())
+          dev.off()
+        }
+      )
+      ##
       output$phositealigndf<-renderDataTable({
-        datatable(phositealigndfout(), options = list(pageLength = 10))
+        datatable(phositealigndfout(), options = list(pageLength = 5))
       })
       output$phositealigndfdl<-downloadHandler(
         filename = function(){paste("PhosphoSite.aligned.",usertimenum,".csv",sep="")},
@@ -2677,10 +2737,10 @@ server <- function(input, output,session) {
           pipeidfx<-data.frame(Nothing="Nothing found here!")
         }else{
           pepseqdf<-data.frame(kinase=phositdf$Uniprot.Human,substrate=phositdf$Seqwindows.Other,stringsAsFactors = F)
-          pepseq<-buildPWM(as.matrix(pepseqdf),wild_card = c("_","-","U"))
+          pepseq<-buildPWM(as.matrix(pepseqdf),wild_card = c("_","-","U"),substrates_n=1)
           pepseq1<-round((2^pepseq$pwm[[1]]-0.01)/20,digits = 7)
           ksdf<-fread("Kinase_Substrate_Dataset",data.table = FALSE)
-          ksdf1<-ksdf[ksdf$KIN_ORGANISM=="human" & ksdf$SUB_ORGANISM=="human",c("KINASE","SITE_+/-7_AA")]
+          ksdf1<<-ksdf[ksdf$KIN_ORGANISM=="human" & ksdf$SUB_ORGANISM=="human",c("KINASE","SITE_+/-7_AA")]
           colnames(ksdf1)<-c("kinase","substrate")
           ksdf2<-table(ksdf1$kinase)[table(ksdf1$kinase)>=5]
           ksdf3<-ksdf1[ksdf1$kinase%in%names(ksdf2),]
@@ -2696,16 +2756,38 @@ server <- function(input, output,session) {
             PWMDistance = sum(sqrt(colSums(diffMatrix)))/sqrt(2)/width
             return(PWMDistance) 
           }
+          cosine_similarity_pwm<-function(pwm1,pwm2){
+            # 提取PWM的权重
+            pwm1 <- as.matrix(pwm1)
+            pwm2 <- as.matrix(pwm2)
+            # 归一化PWM
+            weights1 <- pwm1 #/ sum(pwm1)
+            weights2 <- pwm2 #/ sum(pwm2)
+            # 计算余弦相似性的分子部分（向量点积）
+            dot_product <- sum(weights1 * weights2, na.rm = TRUE)
+            # 计算余弦相似性的分母部分（向量的欧几里得范数）
+            norm_weights1 <- sqrt(sum(weights1^2, na.rm = TRUE))
+            norm_weights2 <- sqrt(sum(weights2^2, na.rm = TRUE))
+            # 避免除以零
+            if (norm_weights1 == 0 || norm_weights2 == 0) {
+              return(0)
+            }
+            # 计算并返回余弦相似性
+            similarity <- dot_product/(norm_weights1*norm_weights2)
+            return(similarity)
+          }
           PWMvec<-vector()
           for(i in 1:length(ksdf3pwm$pwm)){
             ksdf3pwmi<-round((2^ksdf3pwm$pwm[[i]]-0.01)/20,digits = 7)
-            PWMvec[i]<-euclidean_distance_pwm(pepseq1,ksdf3pwmi)
+            PWMvec[i]<-cosine_similarity_pwm(pepseq1,ksdf3pwmi)
           }
           PWMvec1<-ksdf3pwm$kinase
           PWMvec1$PWM_input<-isolate(toupper(input$prophosite))
           PWMvec1$Cosine.Similarity<-PWMvec
           pipeidfx<-PWMvec1[,c(3,1,4)]
+          pipeidfx<-pipeidfx[order(pipeidfx[[3]],decreasing = T),]
           colnames(pipeidfx)<-c("PWM_input","PWM_PsP","Cosine.Similarity")
+          rownames(pipeidfx)<-1:nrow(pipeidfx)
         }
         pipeidfx
       })
