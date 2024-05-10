@@ -35,7 +35,7 @@ PTMoreR_app()
 **Please note**, as there are many databases from different species, this package is large. If you have some issues when you install it using the code above, _please try download it into your own computer and install locally_. And please also feel free to write an issue or e-mail to me if you have any problem about this software.
 
 Then PTMoreR will be started as below:
-<img src="openfig.png" align="center" height="600" width="1700"/>
+<img src="openfignew.png" align="center" height="600" width="1700"/>
 <br>
 
 ## Friendly suggestions
