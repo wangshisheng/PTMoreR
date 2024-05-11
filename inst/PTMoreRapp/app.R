@@ -733,7 +733,7 @@ ui <- dashboardPage(
             collapsible = FALSE,
             h3("A detailed introduction of this software can be found in the Supplementary Notes:"),
             div(style="text-align:left;margin-top:10px;font-size:150%;",
-                HTML("&curren;&nbsp;&nbsp;<a style='font-size:130%;font-family: 'SimHei';' href='https://github.com/wangshisheng/PTMoreR/blob/main/SupplementaryNotes.pdf' target='_blank'>https://github.com/wangshisheng/PTMoreR/blob/main/SupplementaryNotes.pdf</a><br />"))
+                HTML("&curren;&nbsp;&nbsp;<a style='font-size:130%;font-family: 'SimHei';' href='https://github.com/wangshisheng/PTMoreR/blob/master/SupplementaryNotes.pdf' target='_blank'>https://github.com/wangshisheng/PTMoreR/blob/master/SupplementaryNotes.pdf</a><br />"))
           )
         )
       )
