@@ -8,7 +8,7 @@ PTMoreR enables a motif-centric proteomic mapping and annotation of post-transla
 <img src="Figure1app.png" align="center" height="378" width="900"/>
 
 ## How to use
-A detailed introduction of this software can be found in the [Supplementary Notes](https://github.com/wangshisheng/PTMoreR/blob/main/SupplementaryNotes.pdf).
+A detailed introduction of this software can be found in the [Supplementary Notes](https://github.com/wangshisheng/PTMoreR/blob/master/SupplementaryNotes.pdf).
 
 ## Run it locally
 This tool is developed with R, so if you want to run it locally, you may do some preparatory work:  
