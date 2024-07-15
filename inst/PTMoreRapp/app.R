@@ -104,13 +104,27 @@ ui <- dashboardPage(
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 1. Import Sequence Data.</b> In this part, users can upload their own peptide sequences with modification (e.g. phosphorylation). The example data were obtained from Rat and can be found when users click 'Load example data' below.<br />")), 
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 2. Pre-alignment.</b> This step aligns those peptide sequences with the background database (protein sequences) and force the modified sites/residues to be central sites, then users can get the standard peptide window sequences (e.g. 15 amino acid length by default).<br />")), 
                 #div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to the other species.</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which can be chosen below.<br />")), 
-                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to Human.</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which is Human by default.<br />")),
+                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to Human (or other species).</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which is Human by default. Please note: if users choose other species, this tool would take more time to blast.<br />")),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 4. Motif Enrichment and Plot.</b> This step will find overrepresented sequence motifs for uploaded peptides and blasted peptides respectively, then visualize them. Uploaded peptides here means those modified peptides uploaded directly by users. 
                 Blasted peptides here means those modified peptides mapped to human after blasting.<br />")),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 5. Annotation and enrichment analysis based on Kinase-Substrate database.</b> This step will offer more flexible annotation based on kinase-substrate databases (e.g. PhosphoSitePlus) and network plots.<br />")),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 6. Interaction Plot.</b> This step will visualize the expression of modification sites on interacting proteins on the basis of protein-protein interaction data."))
               )
             ),
+            #div(style="margin-left:27%;font-size:120%",
+            #    HTML("Enter your email here (Optional, please also check junk mail if possible):<br />")),
+            #div(style="margin-left:32%;margin-top:-10px;",textInput("emailto","",value = "",placeholder="wukongomics@163.com")),
+            #fluidRow(
+            #  column(
+            #    6,
+            #    div(style="margin-left:5%;font-size:120%",
+            #        HTML("Enter your email here (Optional, please also check junk mail if possible):<br />"))
+            #  ),
+            #  column(
+            #    6,
+            #    div(style="text-align:left;margin-left:-30px;margin-top:-20px;",textInput("emailto","",value = "",placeholder="wukongomics@163.com"))
+            #  )
+            #),
             column(
               width = 12,
               div(style="margin-top:10px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 1. Import Sequence Data.</b>")),
@@ -139,12 +153,12 @@ ui <- dashboardPage(
                         radioButtons(
                           "metabopathfileType_Input",
                           label = h5("1. File format:"),
-                          choices = list(".xlsx" = 1,".xls"=2, ".csv/txt" = 3),
+                          choices = list(".xlsx" = 1,".xls"=2, ".csv" = 3),
                           selected = 1,
                           inline = TRUE
                         ),
                         fileInput('metabopathfile1', h5('1.1. Import your data:'),
-                                  accept=c('text/csv','text/plain','.xlsx','.xls'))#,
+                                  accept=c('text/csv','.xlsx','.xls'))#,'text/plain',
                         #checkboxInput('metabopathheader', '1.2. Header?', TRUE),
                         #checkboxInput('metabopathfirstcol', '1.3. First column?', FALSE),
                         #conditionalPanel(condition = "input.metabopathfileType_Input==1",
@@ -259,7 +273,7 @@ ui <- dashboardPage(
             ),
             column(
               width = 12,
-              div(style="margin-top:0px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to Human.</b>")),
+              div(style="margin-top:0px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to Human (or other species).</b>")),
               column(
                 width = 5,
                 box(width = 12, inputId = "input_card3", 
@@ -309,6 +323,15 @@ ui <- dashboardPage(
                       condition = "input.blosum50yuzhiif==true",
                       div(id="blosum50_div",numericInput("blosum50yuzhi",h5("5.1. BLOSUM50 Score threshold:"),value = 50)),
                       bsTooltip("blosum50_div",'BLOSUM50 means that the matrix was built using blocks of aligned sequences that had no more than 50% identity, which is used to score alignments between evolutionarily divergent protein sequences.',
+                                placement="right",options=list(container="body"))
+                    ),
+                    checkboxInput("blast2otherif","6. Whether blast to other species?",FALSE),
+                    bsTooltip("blast2otherif",'If false (by default), this tool will blast to Human automatically. Otherwise, users can select another specise below they want to blast to. Please note, this may take a quite long time, we suggest to use the local version.',
+                              placement="right",options=list(container="body")),
+                    conditionalPanel(
+                      condition = "input.blast2otherif==true",
+                      div(id="blast2other_div",selectizeInput('blast2otherselect', h5('Please select a species:'), choices =NULL)),
+                      bsTooltip("blast2other_div",'Please select another species you want to blast to.',
                                 placement="right",options=list(container="body"))
                     ),
                     tags$hr(style="border-color: grey;"),
@@ -514,9 +537,12 @@ ui <- dashboardPage(
                     title = strong("Input Parameters"), status = "primary", 
                     solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE,
                     uiOutput("kinasemotifui"),
-                    div(id='genenamesif_div',checkboxInput("genenamesif","Show gene names or not?",TRUE)),
+                    div(id='genenamesif_div',checkboxInput("genenamesif","2. Show gene names or not?",TRUE)),
                     bsTooltip("genenamesif_div",'If true, the gene names will be appeared in the network plot, otherwise, the uniprot ids will be shown.',
                               placement = "bottom",options = list(container = "body")),
+                    selectInput("ksdatabasetype",h5("3. KS database type:"),choices = c("From PhosphoPlus"=1,"From the Kniase library"=2)),
+                    bsTooltip("ksdatabasetype",'Which kind of Kinase-Substrate (KS) database users want to choose. From PhosphoPlus means the KS database was downloaded from the PhosphoPlus database, and From the Kniase library means the KS database was produced from the Kinase Libraty (Lew Cantley et al. 2024).',
+                              placement = "right",options = list(container = "body")),
                     #uiOutput("kinasemotifui"),
                     tags$hr(style="border-color: grey;"),
                     actionButton("mcsbtn_kniase","Calculate",icon("paper-plane"),
@@ -749,8 +775,12 @@ server <- function(input, output,session) {
   #show data
   metabopath_spedf1<-read.csv("metabopath-species.csv",header = T,stringsAsFactors = F)
   metabopath_spedf<<-metabopath_spedf1[,-3]#[-2,]
-  metabopath_spedf_paste<-paste(metabopath_spedf$Organism.ID,metabopath_spedf$Organism,sep = "-")
+  metabopath_spedf_paste<<-paste(metabopath_spedf$Organism.ID,metabopath_spedf$Organism,sep = "-")
   updateSelectizeInput(session, "metabopathspeciesselect", choices = c("",metabopath_spedf_paste),
+                       server = T)
+  metabopath_spedf_paste1<-metabopath_spedf_paste[-2]
+  metabopath_spedf_paste1<-metabopath_spedf_paste1[c(2,1,3:length(metabopath_spedf_paste1))]
+  updateSelectizeInput(session, "blast2otherselect", choices = c(metabopath_spedf_paste1),
                        server = T)
   #output$metabopathspecies<-renderUI({
   #selectizeInput('metabopathspeciesselect', h5('Species:'), choices =metabopath_spedf_paste)#,options = list(maxOptions = 10)
@@ -770,7 +800,7 @@ server <- function(input, output,session) {
       dataread<-read.csv("Spectronaut_Exampledata.csv",stringsAsFactors = F)
     }
     else{
-      dataread<-read.csv("Normal_Exampledata.csv",stringsAsFactors = F)
+      dataread<-read.csv("Normal_Exampledata2.csv",stringsAsFactors = F)
     }
     dataread
   })
@@ -788,30 +818,19 @@ server <- function(input, output,session) {
         dataread
       }else{
         if (input$metabopathfileType_Input == "1"){
-          dataread<-read.xlsx(files$datapath,rowNames=FALSE,#input$metabopathfirstcol
-                              colNames = TRUE,sheet = 1)#input$metabopathheader input$metabopathxlsxindex
+          dataread<-read.xlsx(files$datapath,rowNames=FALSE,colNames = TRUE,sheet = 1)
         }
         else if(input$metabopathfileType_Input == "2"){
-          #if(sum(input$metabopathfirstcol)==1){
-          #  rownametfmetabopath<-1
-          #}else{
-          #  rownametfmetabopath<-NULL
-          #}
-          dataread<-read.xls(files$datapath,sheet = 1,header=TRUE,#input$metabopathxlsxindex input$metabopathheader,
-                             row.names = NULL, sep="\t",stringsAsFactors = F)#input$metabopathsep
+          dataread<-read.xls(files$datapath,sheet = 1,header=TRUE,
+                             row.names = NULL, sep="\t",stringsAsFactors = F)
         }
         else{
-          #if(sum(input$metabopathfirstcol)==1){
-          #  rownametfmetabopath<-1
-          #}else{
-          #  rownametfmetabopath<-NULL
-          #}
-          dataread<-read.csv(files$datapath,header=TRUE,#input$metabopathheader input$metabopathsep
-                             row.names = NULL, sep="\t",stringsAsFactors = F)#rownametfmetabopath
+          dataread<-read.csv(files$datapath,header=TRUE,
+                             row.names = NULL,stringsAsFactors = F)# sep="\t",
         }
       }
     }else{
-      zhantieidstr<-strsplit(input$metabopath_zhantie,"\n")
+      zhantieidstr<<-strsplit(input$metabopath_zhantie,"\n")
       dataread<-data.frame(Input_Seqs=zhantieidstr[[1]])
     }
     dataread
@@ -822,7 +841,7 @@ server <- function(input, output,session) {
     }else{
       dataread<-exampledataout()
     }
-    datatable(dataread, options = list(pageLength = 10))
+    datatable(dataread, options = list(pageLength = 10,autoWidth = F))
   })
   
   seqrawdataout<-reactive({
@@ -834,7 +853,11 @@ server <- function(input, output,session) {
     }else{
       dataread<-exampledataout()
     }
-    datareadx<-dataread
+    if(ncol(dataread)==1){
+      datareadx<-dataread
+    }else{
+      datareadx<-dataread[,2,drop=F]
+    }
     origidatatypex<-isolate(input$origidatatype)
     Peptides<-vector()
     if(origidatatypex=="MaxQuant"){
@@ -927,7 +950,7 @@ server <- function(input, output,session) {
   })
   output$seqbjdata<-renderDataTable({
     datareadbj<-seqbjdataout()
-    datatable(datareadbj, options = list(pageLength = 10))
+    datatable(datareadbj, options = list(pageLength = 10,autoWidth = F))
   })
   
   fastaseqownout<-reactive({
@@ -1082,16 +1105,18 @@ server <- function(input, output,session) {
   observeEvent(input$mcsbtn_resjieshi, {
     showModal(modalDialog(
       title = "Pre-alignment result description:",
-      paste0("1. Pep.upload: this column contains those peptides users upload."),br(),
-      paste0("2. Stripped.pep: the peptide skeleton."),br(),
-      paste0("3. Pep.main.index: the position of the main modified amino acid in the peptide, for example, if users upload their peptides containing Class I phosphorylation sites with high confidence, such as 'TSLWNPT#Y@GSWFTEK', then this software will recognize '#' as Class I phosphorylation site and '@' as non-Class I phosphorylation site by default, so the Pep.main.index will be 7."),br(),
-      paste0("4. Pep.all.index: the position of all modified amino acid in the peptide. As the example in Pep.main.index, the Pep.all.index will be 7;8."),br(),
-      paste0("5. Center.amino.acid: the central amino acid in the aligned peptide."),br(),
-      paste0("6. Seqwindows: the aligned standard peptides. Note for multiple modification sites or types, the column provides peptides with all the sites respectively centered."),br(),
-      paste0("7. PRO.from.Database: provide the protein name containing this peptide from the fasta file the user uploaded."),br(),
-      paste0("8. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
-      paste0("9. PRO.CombinedID: Combining the protein ID, Center.amino.acid and PROindex.from.Database together with '_'."),br(),
-      paste0("10. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with 'Yes', otherwise, 'No'. This column only appears when users choose the parameter--- Check if containing some regular sequence."),
+      #Pep.upload, Stripped.pep,Pep.main.index,Pep.all.index,Seqwindows,PRO.from.Database,PROindex.from.Database,PRO.CombinedID,Contain.if
+      #1,7,5,8,9,6,2,3,4,10
+      paste0("1. Uploaded Peptides: this column contains those peptides users upload."),br(),
+      paste0("2. Protein ID from Database: provide the protein name containing this peptide from the fasta file the user uploaded."),br(),
+      paste0("3. Center amino acid: the central amino acid in the aligned peptide."),br(),
+      paste0("4. Modified Amino Acid Position in Protein Sequence: the position of modified amino acid in the protein sequence."),br(),
+      paste0("5. Combined Protein Identifier: Combining the protein ID, Center.amino.acid and PROindex.from.Database together with '_'."),br(),
+      paste0("6. Aligned Standard Peptides: the aligned standard peptides. Note for multiple modification sites or types, the column provides peptides with all the sites respectively centered."),br(),
+      paste0("7. Peptide Skeleton: the peptide skeleton."),br(),
+      paste0("8. Main Modification Site in Uploaded Peptides: the position of the main modified amino acid in the peptide, for example, if users upload their peptides containing Class I phosphorylation sites with high confidence, such as 'TSLWNPT#Y@GSWFTEK', then this software will recognize '#' as Class I phosphorylation site and '@' as non-Class I phosphorylation site by default, so the Pep.main.index will be 7."),br(),
+      paste0("9. All Modification Site in Uploaded Peptides: the position of all modified amino acid in the peptide. As the example in Pep.main.index, the Pep.all.index will be 7;8."),br(),
+      paste0("10. Regular Sequence Inclusion Check: whether containing the sequences that match the regular expression (see above), if true, marked with 'Yes', otherwise, 'No'. This column only appears when users choose the parameter--- Check if containing some regular sequence."),
       size ="l",
       easyClose = TRUE,
       footer = modalButton("Cancel")
@@ -1118,24 +1143,24 @@ server <- function(input, output,session) {
   observeEvent(input$mcsbtn_resjieshi2_1, {
     showModal(modalDialog(
       title = "The blast result description:",
-      paste0("1. Pep.upload: this column contains those peptides users upload."),br(),
-      paste0("2. Stripped.pep: the peptide skeleton."),br(),
-      paste0("3. Pep.main.index: the position of the main modified amino acid in the peptide, for example, if users upload their peptides containing Class I phosphorylation sites with high confidence, such as 'TSLWNPT#Y@GSWFTEK', then this software will recognize '#' as Class I phosphorylation site and '@' as non-Class I phosphorylation site by default, so the Pep.main.index will be 7."),br(),
-      paste0("4. Pep.all.index: the position of all modified amino acid in the peptide. As the example in Pep.main.index, the Pep.all.index will be 7;8."),br(),
-      paste0("5. Center.amino.acid: the central amino acid in the aligned peptide."),br(),
-      paste0("6. Seqwindows: the aligned standard peptides."),br(),
-      paste0("7. PRO.from.Database: provide the protein ID/name containing this peptide from the fasta file the user uploaded."),br(),
-      paste0("8. PROindex.from.Database: the position of modified amino acid in the protein sequence."),br(),
-      paste0("9. PRO.CombinedID: Combining the protein ID, Center.amino.acid and PROindex.from.Database together with '_'."),br(),
-      paste0("10. Contain.if: whether containing the sequences that match the regular expression (see above), if true, marked with 'Yes', otherwise, 'No'. This column only appears when users choose the parameter---Check if containing some regular sequence (in step2)."),br(),
-      paste0("11. Center.amino.acids.Other: the central amino acid mapped from the human peptides."),br(),
-      paste0("12. Seqwindows.Other: the standard peptides mapped from the human peptides."),br(),
-      paste0("13. PRO.from.Other: the protein ID/name from the mapped human protein."),br(),
-      paste0("14. PROindex.from.Other: the position of modified amino acid in the mapped human protein sequence."),br(),
-      paste0("15. PRO.CombinedID.Other: Combining the PRO.from.Other, Center.amino.acids.Other and PROindex.from.Other together with '_'."),br(),
-      paste0("16. Center.aa.match: The matching degree of central amino acids (CAAs) when the uploaded peptides are blasted to Human protein sequences. 1. Exact matching: The CAAs are same, for example, the CAA is 'S' in the uploaded peptides and the CAA is also 'S' in the blasted sequence. 2. Fuzzy matching: For example, the CAA is 'S' in the uploaded peptides and the CAA could be 'S', 'T', or 'Y' in the blasted sequence. All: Reporting all results."),br(),
-      paste0("17. Window.similarity: The similarity of sequence windows between the uploaded peptides and the blasted peptides. For example, if there are 15 amino acids in one sequence window, 7 here means there are 7 amino acids are exactly same (amino acids names and positions in both windows are all same)."),br(),
-      paste0("18. BLOSUM50.Score: BLOSUM50 means that the matrix was built using blocks of aligned sequences that had no more than 50% identity, which is used to score alignments between evolutionarily divergent protein sequences."),br(),
+      paste0("1. Uploaded Peptides: this column contains those peptides users upload."),br(),
+      paste0("2. Peptide Skeleton: the peptide skeleton."),br(),
+      paste0("3. Main Modification Site in Uploaded Peptides: the position of the main modified amino acid in the peptide, for example, if users upload their peptides containing Class I phosphorylation sites with high confidence, such as 'TSLWNPT#Y@GSWFTEK', then this software will recognize '#' as Class I phosphorylation site and '@' as non-Class I phosphorylation site by default, so the Pep.main.index will be 7."),br(),
+      paste0("4. All Modification Site in Uploaded Peptides: the position of all modified amino acid in the peptide. As the example in Pep.main.index, the Pep.all.index will be 7;8."),br(),
+      paste0("5. Center amino acid: the central amino acid in the aligned peptide."),br(),
+      paste0("6. Aligned Standard Peptides: the aligned standard peptides."),br(),
+      paste0("7. Protein ID from Database: provide the protein ID containing this peptide from the fasta file the user uploaded."),br(),
+      paste0("8. Modified Amino Acid Position in Protein Sequence: the position of modified amino acid in the protein sequence."),br(),
+      paste0("9. Combined Protein Identifier: Combining the protein ID, Center.amino.acid and PROindex.from.Database together with '_'."),br(),
+      paste0("10. Regular Sequence Inclusion Check: whether containing the sequences that match the regular expression (see above), if true, marked with 'Yes', otherwise, 'No'. This column only appears when users choose the parameter---Check if containing some regular sequence (in step2)."),br(),
+      paste0("11. Blasted Center amino acid: the central amino acid mapped from the blasted peptides."),br(),
+      paste0("12. Blasted Standard Peptides: the standard peptides mapped from the blasted peptides."),br(),
+      paste0("13. Blasted Protein ID: the protein ID from the blasted protein."),br(),
+      paste0("14. Blasted Modified Amino Acid Position in Protein Sequence: the position of modified amino acid in the blasted protein sequence."),br(),
+      paste0("15. Blasted Combined Protein Identifier: Combining the PRO.from.Other, Center.amino.acids.Other and PROindex.from.Other together with '_'."),br(),
+      paste0("16. Standard Peptides Matching Degree: The matching degree of central amino acids (CAAs) when the uploaded peptides are blasted to Human protein sequences. 1. Exact matching: The CAAs are same, for example, the CAA is 'S' in the uploaded peptides and the CAA is also 'S' in the blasted sequence. 2. Fuzzy matching: For example, the CAA is 'S' in the uploaded peptides and the CAA could be 'S', 'T', or 'Y' in the blasted sequence. All: Reporting all results."),br(),
+      paste0("17. Window Similarity: The similarity of sequence windows between the uploaded peptides and the blasted peptides. For example, if there are 15 amino acids in one sequence window, 7 here means there are 7 amino acids are exactly same (amino acids names and positions in both windows are all same)."),br(),
+      paste0("18. BLOSUM50 Score: BLOSUM50 means that the matrix was built using blocks of aligned sequences that had no more than 50% identity, which is used to score alignments between evolutionarily divergent protein sequences."),br(),
       size ="l",
       easyClose = TRUE,
       footer = modalButton("Cancel")
@@ -1371,11 +1396,9 @@ server <- function(input, output,session) {
             proidindexall[i]<-"No Match"
             PRO.CombinedID[i]<-"No Match"
           }
-          
           incProgress(1/nrow(uploaddata1), detail = paste("index", i))
         }
       })
-      
       uploaddata1$Seqwindows<-seqseqall
       uploaddata1$PRO.from.Database<-proidall
       uploaddata1$PROindex.from.Database<-proidindexall
@@ -1527,12 +1550,51 @@ server <- function(input, output,session) {
       shinyjs::show(id = "hiddendiv1", anim = FALSE)
       output$seqduiqi<-renderDataTable({
         datareaddq<-seqduiqievent()#isolate(seqduiqiout())
-        datatable(datareaddq, options = list(pageLength = 10))
+        if(ncol(datareaddq)==9){
+          colnames(datareaddq)<-c("Uploaded Peptides","Peptide Skeleton",
+                                  "Main Modification Site in Uploaded Peptides",
+                                  "All Modification Site in Uploaded Peptides",
+                                  "Center amino acid","Aligned Standard Peptides",
+                                  "Protein ID from Database",
+                                  "Modified Amino Acid Site in Protein Sequence",
+                                  "Combined Protein Identifier")
+          datareaddq<-datareaddq[,c(1,7,5,8,9,6,2,3,4)]
+        }else{
+          colnames(datareaddq)<-c("Uploaded Peptides","Peptide Skeleton",
+                                  "Main Modification Site Index","All Modification Site Index",
+                                  "Center amino acid","Aligned Standard Peptides",
+                                  "Protein ID from Database",
+                                  "Modified Amino Acid Site in Protein Sequence",
+                                  "Combined Protein Identifier",
+                                  "Regular Sequence Inclusion Check")
+          datareaddq<-datareaddq[,c(1,7,5,8,9,6,2,3,4,10)]
+        }
+        datatable(datareaddq, options = list(pageLength = 10,autoWidth = F))
       })
       output$seqduiqidl<-downloadHandler(
         filename = function(){paste("Prealign_data",usertimenum,".csv",sep="")},
         content = function(file){
-          write.csv(seqduiqievent(),file,row.names=FALSE)
+          datareaddq<-seqduiqievent()#isolate(seqduiqiout())
+          if(ncol(datareaddq)==9){
+            colnames(datareaddq)<-c("Uploaded Peptides","Peptide Skeleton",
+                                    "Main Modification Site in Uploaded Peptides",
+                                    "All Modification Site in Uploaded Peptides",
+                                    "Center amino acid","Aligned Standard Peptides",
+                                    "Protein ID/Name from Database",
+                                    "Modified Amino Acid Site in Protein Sequence",
+                                    "Combined Protein Identifier")
+            datareaddq<-datareaddq[,c(1,7,5,8,9,6,2,3,4)]
+          }else{
+            colnames(datareaddq)<-c("Uploaded Peptides","Peptide Skeleton",
+                                    "Main Modification Site Index","All Modification Site Index",
+                                    "Center amino acid","Aligned Standard Peptides",
+                                    "Protein ID/Name from Database",
+                                    "Modified Amino Acid Site in Protein Sequence",
+                                    "Combined Protein Identifier",
+                                    "Regular Sequence Inclusion Check")
+            datareaddq<-datareaddq[,c(1,7,5,8,9,6,2,3,4,10)]
+          }
+          write.csv(datareaddq,file,row.names=FALSE)
         }
       )
     }
@@ -1589,7 +1651,7 @@ server <- function(input, output,session) {
   )
   
   output$seqduiqiduosite<-renderDataTable({
-    datatable(seqduiqiduositeout())
+    datatable(seqduiqiduositeout(), options = list(pageLength = 10,autoWidth = F))
   })
   output$seqduiqiduositedl<-downloadHandler(
     filename = function(){paste("Prealign_MultiSites_data",usertimenum,".csv",sep="")},
@@ -1621,6 +1683,26 @@ server <- function(input, output,session) {
         datafasta<-files$datapath#readAAStringSet(files$datapath)
       }
     }
+    if(!input$blast2otherif){
+      wuzhongother<-"9606"
+      datafasta2<-"fasta/9606.fasta"
+    }else{
+      wuzhongother<-strsplit(input$blast2otherselect,"-")[[1]][1]
+      fastafiles<<-list.files("fasta/",pattern = "fasta$")#metabopath_spedf1
+      fastafiles1<-which(fastafiles==paste0(wuzhongother,".fasta"))
+      if(length(fastafiles1)>0){
+        datafasta2<-paste0("fasta/",wuzhongother,".fasta")
+      }else{
+        baseUrl <- "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=proteome:"
+        Proteome_IDx<-metabopath_spedf1$Proteome_ID[which(metabopath_spedf1$Organism.ID==wuzhongother)]
+        baseUrl1<-paste0(baseUrl,Proteome_IDx)
+        withProgress(message = 'Downloading fasta file, wait a moment...', style = "notification", detail = "", value = 0,{
+          incProgress(1/2, detail = "")
+          download.file(baseUrl1, paste0("fasta/",wuzhongother,".fasta"),quiet = TRUE)
+        })
+        datafasta2<-paste0("fasta/",wuzhongother,".fasta")
+      }
+    }
     if(TRUE){#isolate(input$preblastif)
       #if(input$wuzhong2id==""){
       #  wuzhong2<<-"9606"
@@ -1634,44 +1716,71 @@ server <- function(input, output,session) {
       #  #load(paste("temp/",input$preblastbetweentwo,sep=""))
       #  load(input$preblastbetweentwo$datapath)
       #}
-      datafasta2<-"fasta/9606.fasta"
-      wuzhong2<<-"9606"
+      datafastax<<-datafasta
+      datafastax2<<-datafasta2#"fasta/9606.fasta"
+      wuzhongother<<-wuzhongother
+      #wuzhong2<<-wuzhong2#"9606"
       blastfiles<<-list.files("percentdatabase/",pattern = "csv$")
-      blastfiles1<-which(blastfiles==paste0(wuzhong,"_blast_best_9606.csv"))
-      if(length(blastfiles1)>0){
+      blastfiles1<-which(blastfiles==paste0(wuzhong,"_blast_best_",wuzhongother,".csv"))
+      if(length(blastfiles1)>0){# & !input$blast2otherif
         if(input$blastbesthit==1){
-          blast_best_other<<-read.csv(paste0("percentdatabase/",wuzhong,"_blast_best_9606.csv"),stringsAsFactors = FALSE)
+          blast_best_other<-read.csv(paste0("percentdatabase/",wuzhong,"_blast_best_",wuzhongother,".csv"),stringsAsFactors = FALSE)
         }else{
-          blast_best_other<<-read.csv(paste0("aligndatabase/",wuzhong,"_blast_best_9606.csv"),stringsAsFactors = FALSE)
+          blast_best_other<-read.csv(paste0("aligndatabase/",wuzhong,"_blast_best_",wuzhongother,".csv"),stringsAsFactors = FALSE)
         }
+        colnames(blast_best_other)[1:3]<-c("query_id","subject_id","perc_identity")
       }else{
         get_best_hit <- function(x) {
           min_val <- min(x$evalue)
           evalue <- perc_identity <- NULL
           res <- dplyr::filter(x, evalue == min_val)
           if (nrow(res) > 1) {
-            #max_len <- max(res$alig_length)
-            max_len <- max(res$perc_identity)
+            if(input$blastbesthit==1){
+              max_len <- max(res$perc_identity)
+            }else{
+              max_len <- max(res$alig_length)
+            }
             res <- dplyr::filter(res, perc_identity == max_len)
           }
           if (nrow(res) > 1) 
             res <- dplyr::slice(res, 1)
           return(res)
         }
-        withProgress(message = 'Blasting:',min = 0, max = 2, style = "notification", detail = "It will take about 1 hour......Please have a cup of coffee.", value = 1,{
-          blast_best_other <<- blast_best_hit(
-            query   = datafasta,
-            subject = datafasta2,
-            task="blastp",
-            search_type = "protein_to_protein",
-            cores = 8,
-            db.import  = FALSE)
-          blast_best_other$query_id<-unlist(lapply(blast_best_other$query_id,function(x){
-            strsplit(x,"\\|")[[1]][2]
-          }))
-          blast_best_other$subject_id<-unlist(lapply(blast_best_other$subject_id,function(x){
-            strsplit(x,"\\|")[[1]][2]
-          }))
+        
+        withProgress(message = 'Blasting:',min = 0, max = 2, style = "notification", detail = "It will take about a long time......Please have a cup of coffee.", value = 1,{
+          #blast_best_other <<- blast_best_hit(
+          #  query   = datafasta,
+          #  subject = datafasta2,
+          #  task="blastp",
+          #  search_type = "protein_to_protein",
+          #  cores = 8,
+          #  db.import  = FALSE)
+          #blast_best_other <- blast_protein_to_protein(
+          #  query   = datafastax,
+          #  subject = datafastax2,
+          #  task="blastp",
+          #  #search_type = "protein_to_protein",
+          #  cores = 8,
+          #  db.import  = FALSE)
+          #query_id <- NULL
+          #blast_best_otherx <- dplyr::do(dplyr::group_by(blast_best_other, query_id),
+          #                               get_best_hit(.))
+          library(rBLAST)
+          makeblastdb(file = paste0("fasta/",wuzhongother,".fasta"),
+                      db_name = paste0(wuzhongother,"_db"), dbtype = "prot")
+          dbx <- blast(paste0(wuzhongother,"_db"),type="blastp")
+          seqx <- readAAStringSet(paste0("fasta/",wuzhong,".fasta"))
+          blast_best_other<-predict(dbx,seqx,BLAST_args = "-max_target_seqs 1 -num_threads 8")
+          colnames(blast_best_other)[1:3]<-c("query_id","subject_id","perc_identity")
+          fwrite(blast_best_other,file = paste0("percentdatabase/",wuzhong,"_blast_best_",wuzhongother,".csv"))
+          fwrite(blast_best_other,file = paste0("aligndatabase/",wuzhong,"_blast_best_",wuzhongother,".csv"))
+          #blast_best_otherx$query_id<-unlist(lapply(blast_best_otherx$query_id,function(x){
+          #  strsplit(x,"\\|")[[1]][2]
+          #}))
+          #blast_best_otherx$subject_id<-unlist(lapply(blast_best_otherx$subject_id,function(x){
+          #  strsplit(x,"\\|")[[1]][2]
+          #}))
+          #blast_best_other<-blast_best_otherx
           shiny::incProgress(1, detail = "Generating data...")
         })
       }
@@ -1731,7 +1840,7 @@ server <- function(input, output,session) {
     }
   })
   blastres2out<-reactive({
-    if(TRUE){#isolate(input$preblastif)
+    if(!input$blast2otherif){#TRUE#isolate(input$preblastif)
       #if(input$wuzhong2id==""){
       #  wuzhong2<<-"9606"
       #}else{
@@ -1744,7 +1853,7 @@ server <- function(input, output,session) {
       #  #load(file=paste("temp/",input$preblastproseq,sep=""))
       #  load(input$preblastproseq$datapath)
       #}
-      wuzhong2<<-"9606"
+      #wuzhong2<<-"9606"
       if(input$blastbesthit==1){
         load(file=paste0("percentdatabase/",wuzhong,"_blast_best_seqs_9606.RData"))
       }else{
@@ -1755,8 +1864,10 @@ server <- function(input, output,session) {
       }))
       #save(blastseqlist,file = paste("temp/Blast.Protein.Sequences.",wuzhong,".",wuzhong2,"_",usertimenum,".RData",sep=""))
     }else{
+      library(dplyr)
       blastres1outx<<-blastres1out()
       blaseresdf<-blastres1outx$blast_best_other
+      blaseresdf<-blaseresdf%>%group_by(query_id, subject_id)%>%summarise(max(perc_identity))
       queryfasta<-readAAStringSet(blastres1outx$datafasta)
       queryfastadf<-queryfastadf1<-as.data.frame(queryfasta)
       rownames(queryfastadf)<-unlist(lapply(rownames(queryfastadf1),function(x){
@@ -1767,20 +1878,28 @@ server <- function(input, output,session) {
       rownames(subjectfastadf)<-unlist(lapply(rownames(subjectfastadf1),function(x){
         strsplit(x,"\\|")[[1]][2]
       }))
-      blastseqlist<-list()
-      withProgress(message = 'Generating data', style = "notification", detail = "index 1", value = 0,{
-        for(i in 1:nrow(blaseresdf)){
-          qureyi<-blaseresdf$query_id[i]
-          subjecti<-blaseresdf$subject_id[i]
-          alignquery<-msa(c(queryfasta[rownames(queryfastadf)==qureyi],
-                            subjectfasta[rownames(subjectfastadf)==subjecti]))
-          alignquerydf<-as.data.frame(alignquery@unmasked)$x
-          blastseqlist[[i]]<-alignquerydf
-          incProgress(1/nrow(blaseresdf), detail = paste("index", i))
-        }
-      })
-      names(blastseqlist)<-blaseresdf$query_id
-      #save(blastseqlist,file = paste("temp/Blast.Protein.Sequences.",wuzhong,".",wuzhong2,"_",usertimenum,".RData",sep=""))
+      wuzhong<-strsplit(strsplit(blastres1outx$datafasta,"\\/")[[1]][2],"\\.")[[1]][1]
+      wuzhongother<-strsplit(strsplit(blastres1outx$datafasta2,"\\/")[[1]][2],"\\.")[[1]][1]
+      blastfiles<<-list.files("percentdatabase/",pattern = "RData$")
+      blastfiles1<-which(blastfiles==paste0(wuzhong,"_blast_best_seqs_",wuzhongother,".RData"))
+      if(length(blastfiles1)>0){
+        load(file=paste0("percentdatabase/",wuzhong,"_blast_best_seqs_",wuzhongother,".RData"))
+      }else{
+        blastseqlist<-list()
+        withProgress(message = 'Generating data (probably long time, please take a break) ...', style = "notification", detail = "index 1", value = 0,{
+          for(i in 1:nrow(blaseresdf)){
+            qureyi<-blaseresdf$query_id[i]
+            subjecti<-blaseresdf$subject_id[i]
+            alignquery<-msa(c(queryfasta[rownames(queryfastadf)==qureyi],
+                              subjectfasta[rownames(subjectfastadf)==subjecti]))
+            alignquerydf<-as.data.frame(alignquery@unmasked)$x
+            blastseqlist[[i]]<-alignquerydf
+            incProgress(1/nrow(blaseresdf), detail = paste("index", i))
+          }
+        })
+        names(blastseqlist)<-blaseresdf$query_id
+        save(blastseqlist,file = paste0("percentdatabase/",wuzhong,"_blast_best_seqs_",wuzhongother,".RData"))
+      }
     }
     blastseqlist
   })
@@ -1828,8 +1947,8 @@ server <- function(input, output,session) {
         promainindex<-as.numeric(strsplit(datasuiqiall$PROindex.from.Database[i],";")[[1]])
         grepproindex<-grep(datasuiqiall$PRO.from.Database[i],blaseresdf$query_id)
         if(length(grepproindex)>0){
-          queryindex1<-blaseresdf$query_id[grepproindex]
-          queryindex2<-blaseresdf$subject_id[grepproindex]
+          queryindex1<-blaseresdf$query_id[grepproindex][1]
+          queryindex2<-blaseresdf$subject_id[grepproindex][1]
           subjectpro<-as.data.frame(datafastahuman[readfastasubjnames==queryindex2])$x
           seqnchar<-nchar(subjectpro)
           if(length(seqnchar)>0){
@@ -2049,7 +2168,7 @@ server <- function(input, output,session) {
     input$blastbtn_seqalign,{
       shinyjs::show(id = "hiddendiv2", anim = FALSE)
       output$blastres1<-renderDataTable({
-        datatable(blastres1out()$blast_best_other)
+        datatable(blastres1out()$blast_best_other, options = list(pageLength = 10,autoWidth = F))
       })
       output$blastres1dl<-downloadHandler(
         filename = function(){paste("Blast.Between.Two.Species.",wuzhong,".",wuzhong2,"_",usertimenum,".RData",sep="")},
@@ -2074,11 +2193,57 @@ server <- function(input, output,session) {
         }
       )
       output$blastres<-renderDataTable({
-        datatable(blastresout2())
+        blastresout2xx<-blastresout2()
+        if(ncol(blastresout2xx)==17){
+          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton", 
+                                      "Main Modification Site in Uploaded Peptides", 
+                                      "All Modification Site in Uploaded Peptides",
+                                      "Center amino acid", "Aligned Standard Peptides", 
+                                      "Protein ID from Database", 
+                                      "Modified Amino Acid Position in Protein Sequence", 
+                                      "Combined Protein Identifier",
+                                      "Blasted Center amino acid", "Blasted Standard Peptides", 
+                                      "Blasted Protein ID", 
+                                      "Blasted Modified Amino Acid Position in Protein Sequence", 
+                                      "Blasted Combined Protein Identifier", 
+                                      "Standard Peptides Matching Degree", 
+                                      "Window Similarity", "BLOSUM50 Score")
+        }else{
+          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton", 
+                                      "Main Modification Site in Uploaded Peptides", 
+                                      "All Modification Site in Uploaded Peptides",
+                                      "Center amino acid", "Aligned Standard Peptides", 
+                                      "Protein ID from Database", 
+                                      "Modified Amino Acid Position in Protein Sequence", 
+                                      "Combined Protein Identifier", 
+                                      "Regular Sequence Inclusion Check", 
+                                      "Blasted Center amino acid", "Blasted Standard Peptides", 
+                                      "Blasted Protein ID", 
+                                      "Blasted Modified Amino Acid Position in Protein Sequence", 
+                                      "Blasted Combined Protein Identifier", 
+                                      "Standard Peptides Matching Degree", 
+                                      "Window Similarity", "BLOSUM50 Score")
+        }
+        datatable(blastresout2xx, options = list(pageLength = 10,autoWidth = F))
       })
       output$blastresdl<-downloadHandler(
         filename = function(){paste("BlastToHuman_",usertimenum,".csv",sep="")},
         content = function(file){
+          blastresout2xx<-blastresout2()
+          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton", 
+                                      "Main Modification Site in Uploaded Peptides", 
+                                      "All Modification Site in Uploaded Peptides",
+                                      "Center amino acid", "Aligned Standard Peptides", 
+                                      "Protein ID from Database", 
+                                      "Modified Amino Acid Position in Protein Sequence", 
+                                      "Combined Protein Identifier", 
+                                      "Regular Sequence Inclusion Check", 
+                                      "Blasted Center amino acid", "Blasted Standard Peptides", 
+                                      "Blasted Protein ID", 
+                                      "Blasted Modified Amino Acid Position in Protein Sequence", 
+                                      "Blasted Combined Protein Identifier", 
+                                      "Standard Peptides Matching Degree", 
+                                      "Window Similarity", "BLOSUM50 Score")
           write.csv(blastresout2(),file,row.names=FALSE)
         }
       )
@@ -2336,7 +2501,7 @@ server <- function(input, output,session) {
         }else{
           motiffujidf<-read.csv("Motif.Enrich_uploaded.csv",stringsAsFactors = F)
         }
-        datatable(motiffujidf, options = list(pageLength = 10))
+        datatable(motiffujidf, options = list(pageLength = 10,autoWidth = F))
       })
       output$motiffujidl<-downloadHandler(
         filename = function(){paste("Motif.Enrich_uploaded",usertimenum,".csv",sep="")},
@@ -2372,7 +2537,7 @@ server <- function(input, output,session) {
         round((2^pepseq3$pwm[[1]]-0.01)/20,digits = 7)
       })
       output$uploadmotifpwmdf<-renderDataTable({
-        datatable(uploadmotifpwmdfout(), options = list(pageLength = 10))
+        datatable(uploadmotifpwmdfout(), options = list(pageLength = 10,autoWidth = F))
       })
       output$uploadmotifpwmdfdl<-downloadHandler(
         filename = function(){paste("Motif.PWM_upload",usertimenum,".csv",sep="")},
@@ -2387,7 +2552,7 @@ server <- function(input, output,session) {
         }else{
           motifblastfujidf<-read.csv("Motif.Enrich_blast.csv",stringsAsFactors = F)
         }
-        datatable(motifblastfujidf, options = list(pageLength = 10))
+        datatable(motifblastfujidf, options = list(pageLength = 10,autoWidth = F))
       })
       output$motiffujiblastdl<-downloadHandler(
         filename = function(){paste("Motif.Enrich_blast",usertimenum,".csv",sep="")},
@@ -2423,7 +2588,7 @@ server <- function(input, output,session) {
         round((2^pepseq3$pwm[[1]]-0.01)/20,digits = 7)
       })
       output$blastmotifpwmdf<-renderDataTable({
-        datatable(blastmotifpwmdfout(), options = list(pageLength = 10))
+        datatable(blastmotifpwmdfout(), options = list(pageLength = 10,autoWidth = F))
       })
       output$blastmotifpwmdfdl<-downloadHandler(
         filename = function(){paste("Motif.PWM_blast",usertimenum,".csv",sep="")},
@@ -2434,7 +2599,7 @@ server <- function(input, output,session) {
       #
       output$motiffuji2<-renderDataTable({
         motiffujidf<-isolate(motiffujiout2())
-        datatable(motiffujidf, options = list(pageLength = 10))
+        datatable(motiffujidf, options = list(pageLength = 10,autoWidth = F))
       })
       output$motiffujidl2<-downloadHandler(
         filename = function(){paste("Motif.Enrich.mapped_data",usertimenum,".csv",sep="")},
@@ -2445,7 +2610,7 @@ server <- function(input, output,session) {
       #
       output$regularmotiffuji<-renderDataTable({
         motiffujidf<-isolate(regularmotiffujiout())
-        datatable(motiffujidf, options = list(pageLength = 10))
+        datatable(motiffujidf, options = list(pageLength = 10,autoWidth = F))
       })
       output$regularmotiffujidl<-downloadHandler(
         filename = function(){paste("RegularMotif.Enrich_data",usertimenum,".csv",sep="")},
@@ -2721,7 +2886,7 @@ server <- function(input, output,session) {
       )
       ##
       output$phositealigndf<-renderDataTable({
-        datatable(phositealigndfout(), options = list(pageLength = 5))
+        datatable(phositealigndfout(), options = list(pageLength = 5,autoWidth = F))
       })
       output$phositealigndfdl<-downloadHandler(
         filename = function(){paste("PhosphoSite.aligned.",usertimenum,".csv",sep="")},
@@ -2792,7 +2957,7 @@ server <- function(input, output,session) {
         pipeidfx
       })
       output$pwmsimilaritydf<-renderDataTable({
-        datatable(pwmsimilaritydfout(), options = list(pageLength = 10))
+        datatable(pwmsimilaritydfout(), options = list(pageLength = 10,autoWidth = F))
       })
       output$pwmsimilaritydfdl<-downloadHandler(
         filename = function(){paste("PWM.Similarity",usertimenum,".csv",sep="")},
@@ -2880,7 +3045,7 @@ server <- function(input, output,session) {
         }else{
           datareaddq<-isolate(fastaseqownout())
         }
-        datatable(datareaddq, options = list(pageLength = 10))
+        datatable(datareaddq, options = list(pageLength = 10,autoWidth = F))
       })
       output$allfastadl<-downloadHandler(
         filename = function(){paste("Fasta.align_data",usertimenum,".csv",sep="")},
@@ -2902,8 +3067,19 @@ server <- function(input, output,session) {
     library(plotfunctions)
     library(mapplots)
     #load(file = "PSP_NetworKIN_Kinase_Substrate_Dataset_July2016.rdata")
-    KSData<-read.csv("Kinase_Substrate_Dataset.csv",stringsAsFactors = F)
-    KSData.filter<-KSData[,c(1,3,7,8)]#,4,9
+    #KSData<-read.csv("Kinase_Substrate_Dataset.csv",stringsAsFactors = F)
+    #KSData.filter<-KSData[,c(1,3,7,8)]#,4,9
+    if(input$ksdatabasetype==1){
+      KSData<<-read.csv("Kinase_Substrate_Dataset.csv",stringsAsFactors = F)
+      KSData.filter<-KSData[,c(1,3,7,8)]#,4,9
+      #ksdfx<<-fread("Kinase_Substrate_Dataset",data.table = FALSE)
+      #ksdf.human<-ksdfx[ksdfx$KIN_ORGANISM=="human"&ksdfx$SUB_ORGANISM=="human",]
+      #ksdf.human1<-unique(ksdf.human[,c(1,3,7,8,10)])
+    }else{
+      kinaselibrarydb1<-read.csv("kinaselibrarydb.csv",stringsAsFactors = F)
+      KSData.filter<-kinaselibrarydb1[,-ncol(kinaselibrarydb1)]
+    }
+    KSData.filter<<-KSData.filter
     datareaddqblast<<-blastresout2()
     datareaddqblast<-datareaddqblast[datareaddqblast$Center.aa.match!="Not match",]
     if(input$annotationxuanze==1){
@@ -2997,7 +3173,7 @@ server <- function(input, output,session) {
     }else{
       kkdfs<-"All"
     }
-    selectInput("kinasemotif","Select one or more kinases for network plot:",choices = kkdfs,selected = "All",multiple = TRUE)
+    selectInput("kinasemotif","1. Select one or more kinases for network plot:",choices = kkdfs,selected = "All",multiple = TRUE)
     #bsTooltip("kinasemotif","By default, 'All' is selected and means selecting all kinases to plot network. Otherwise, users can delete 'All' and select one or several kinases to plot network.",
     #          placement = "right",options = list(container = "body"))
   })
@@ -3013,15 +3189,20 @@ server <- function(input, output,session) {
     library(plotfunctions)
     library(mapplots)
     #load(file = "PSP_NetworKIN_Kinase_Substrate_Dataset_July2016.rdata")
-    KSData<-read.csv("Kinase_Substrate_Dataset.csv",stringsAsFactors = F)
-    KSData.filter<-KSData[,c(1,3,7,8,10)]#,4,9
+    if(input$ksdatabasetype==1){
+      #KSData<<-read.csv("Kinase_Substrate_Dataset.csv",stringsAsFactors = F)
+      #KSData.filter<-KSData[,c(1,3,7,8,10)]#,4,9
+      ksdfx<<-fread("Kinase_Substrate_Dataset",data.table = FALSE)
+      ksdf.human<-ksdfx[ksdfx$KIN_ORGANISM=="human"&ksdfx$SUB_ORGANISM=="human",]
+      ksdf.human1<-unique(ksdf.human[,c(1,3,7,8,10)])
+    }else{
+      ksdf.human1<-read.csv("kinaselibrarydb.csv",stringsAsFactors = F)
+    }
     datareaddqblast<<-blastresout2()
     datareaddqblast<-datareaddqblast[datareaddqblast$Center.aa.match!="Not match",]
     load(file = "human.nbtlistdf.rdata")
-    ksdfx<<-fread("Kinase_Substrate_Dataset",data.table = FALSE)
-    ksdf.human<-ksdfx[ksdfx$KIN_ORGANISM=="human"&ksdfx$SUB_ORGANISM=="human",]
-    ksdf.human1<-unique(ksdf.human[,c(1,3,7,8,10)])
-    ksdf.human2<-ksdf.human1[ksdf.human1$KIN_ACC_ID%in%human.nbtlistdf$uniprot,]
+    human.nbtlistdf<<-human.nbtlistdf
+    ksdf.human2<<-ksdf.human1#[ksdf.human1$KIN_ACC_ID%in%human.nbtlistdf$uniprot,]
     PsP.kinases.id<-names(sort(table(ksdf.human2$KIN_ACC_ID),decreasing = T))
     PsP.kinases<-ksdf.human2$GENE[unlist(lapply(PsP.kinases.id,function(x){
       which(ksdf.human2$KIN_ACC_ID==x)[1]
@@ -3193,7 +3374,7 @@ server <- function(input, output,session) {
         }
       )
       output$nodetableres<-renderDataTable({
-        datatable(cmheatmappicdataout()$nodesdf)
+        datatable(cmheatmappicdataout()$nodesdf, options = list(pageLength = 10,autoWidth = F))
       })
       output$nodetableresdl<-downloadHandler(
         filename = function(){paste("Nodesdata",usertimenum,".csv",sep="")},
@@ -3202,7 +3383,7 @@ server <- function(input, output,session) {
         }
       )
       output$edgetableres<-renderDataTable({
-        datatable(cmheatmappicdataout()$edgesdf)
+        datatable(cmheatmappicdataout()$edgesdf, options = list(pageLength = 10,autoWidth = F))
       })
       output$edgetableresdl<-downloadHandler(
         filename = function(){paste("Edgesdata",usertimenum,".csv",sep="")},
@@ -3259,9 +3440,9 @@ server <- function(input, output,session) {
   })
   output$peaksdata<-renderDataTable({
     if(input$loaddatatype==1){
-      datatable(peaksdataout()$yuanshidf, options = list(pageLength = 10))
+      datatable(peaksdataout()$yuanshidf, options = list(pageLength = 10,autoWidth = F))
     }else{
-      datatable(examplepeakdatas(), options = list(pageLength = 10))
+      datatable(examplepeakdatas(), options = list(pageLength = 10,autoWidth = F))
     }
   })
   interactiondataout<-reactive({
@@ -3283,9 +3464,9 @@ server <- function(input, output,session) {
   })
   output$interactiondata<-renderDataTable({
     if(input$loaddatatype==1){
-      datatable(interactiondataout(), options = list(pageLength = 10))
+      datatable(interactiondataout(), options = list(pageLength = 10,autoWidth = F))
     }else{
-      datatable(exampleinterdataout(), options = list(pageLength = 10))
+      datatable(exampleinterdataout(), options = list(pageLength = 10,autoWidth = F))
     }
   })
   processedEdataout<-reactive({
@@ -3318,7 +3499,7 @@ server <- function(input, output,session) {
     datadfchuli1
   })
   output$processedEdata<-renderDataTable({
-    datatable(processedEdataout(), options = list(pageLength = 10))
+    datatable(processedEdataout(), options = list(pageLength = 10,autoWidth = F))
   })
   output$processedEdatadl<-downloadHandler(
     filename = function(){paste("ProcessedExpressionData_",usertimenum,".csv",sep="")},
