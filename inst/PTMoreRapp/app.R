@@ -3075,8 +3075,11 @@ server <- function(input, output,session) {
       #ksdfx<<-fread("Kinase_Substrate_Dataset",data.table = FALSE)
       #ksdf.human<-ksdfx[ksdfx$KIN_ORGANISM=="human"&ksdfx$SUB_ORGANISM=="human",]
       #ksdf.human1<-unique(ksdf.human[,c(1,3,7,8,10)])
+    }else if(input$ksdatabasetype==2){
+      kinaselibrarydb1<-read.csv("kinaselibrarydb_top1.csv",stringsAsFactors = F)
+      KSData.filter<-kinaselibrarydb1[,-ncol(kinaselibrarydb1)]
     }else{
-      kinaselibrarydb1<-read.csv("kinaselibrarydb.csv",stringsAsFactors = F)
+      kinaselibrarydb1<-read.csv("kinaselibrarydb_above99.csv",stringsAsFactors = F)
       KSData.filter<-kinaselibrarydb1[,-ncol(kinaselibrarydb1)]
     }
     KSData.filter<<-KSData.filter
