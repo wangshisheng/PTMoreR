@@ -326,7 +326,7 @@ ui <- dashboardPage(
                                 placement="right",options=list(container="body"))
                     ),
                     checkboxInput("blast2otherif","6. Whether blast to other species?",FALSE),
-                    bsTooltip("blast2otherif",'If false (by default), this tool will blast to Human automatically. Otherwise, users can select another specise below they want to blast to. Please note, this may take a quite long time, we suggest to use the local version.',
+                    bsTooltip("blast2otherif",'If false (by default), this tool will blast to Human automatically. Otherwise, users can select another species below they want to blast to. Please note, this may take a quite long time, we suggest to use the local version.',
                               placement="right",options=list(container="body")),
                     conditionalPanel(
                       condition = "input.blast2otherif==true",
@@ -540,8 +540,8 @@ ui <- dashboardPage(
                     div(id='genenamesif_div',checkboxInput("genenamesif","2. Show gene names or not?",TRUE)),
                     bsTooltip("genenamesif_div",'If true, the gene names will be appeared in the network plot, otherwise, the uniprot ids will be shown.',
                               placement = "bottom",options = list(container = "body")),
-                    selectInput("ksdatabasetype",h5("3. KS database type:"),choices = c("From PhosphoPlus"=1,"From the Kniase library"=2)),
-                    bsTooltip("ksdatabasetype",'Which kind of Kinase-Substrate (KS) database users want to choose. From PhosphoPlus means the KS database was downloaded from the PhosphoPlus database, and From the Kniase library means the KS database was produced from the Kinase Libraty (Lew Cantley et al. 2024).',
+                    selectInput("ksdatabasetype",h5("3. KS database type:"),choices = c("From PhosphoPlus"=1,"From the Kinase library (top 1)"=2,"From the Kinase library (above 0.99)"=3)),
+                    bsTooltip("ksdatabasetype",'Which kind of Kinase-Substrate (KS) database users want to choose. From PhosphoPlus means the KS database was downloaded from the PhosphoPlus database, and From the Kniase library (top 1) means the KS database was produced from the Kinase Library (Lew Cantley et al. 2024) with the topmost percentile. The Kniase library (above 0.99) means the KS database was produced from the Kinase Library with percentile > 0.99.',
                               placement = "right",options = list(container = "body")),
                     #uiOutput("kinasemotifui"),
                     tags$hr(style="border-color: grey;"),
