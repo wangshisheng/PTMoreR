@@ -541,7 +541,7 @@ ui <- dashboardPage(
                     bsTooltip("genenamesif_div",'If true, the gene names will be appeared in the network plot, otherwise, the uniprot ids will be shown.',
                               placement = "bottom",options = list(container = "body")),
                     selectInput("ksdatabasetype",h5("3. KS database type:"),choices = c("From PhosphoSitePlus"=1,"From the Kinase library (top 1)"=2,"From the Kinase library (above 0.99)"=3)),
-                    bsTooltip("ksdatabasetype",'Which kind of Kinase-Substrate (KS) database users want to choose. From PhosphoSitePlus means the KS database was downloaded from the PhosphoSitePlus database, and From the Kinase library (top 1) means the KS database was produced from the Kinase Library (Lew Cantley et al. 2024) with the topmost percentile. The Kinase library (above 0.99) means the KS database was produced from the Kinase Library with percentile > 0.99.',
+                    bsTooltip("ksdatabasetype",'Which kind of Kinase-Substrate (KS) database users want to choose. From PhosphoSitePlus means the KS database was downloaded from the PhosphoSitePlus database. From the Kinase library (top 1) means the KS database was produced from the Kinase Library (Lewis Cantley group and others, 2023 and 2024, Nature (PMID: 36949200, 38720073)) with the topmost percentile. From the Kinase library (above 0.99) means the KS database was produced from the Kinase Library with percentile > 0.99.',
                               placement = "right",options = list(container = "body")),
                     #uiOutput("kinasemotifui"),
                     tags$hr(style="border-color: grey;"),
@@ -3198,8 +3198,13 @@ server <- function(input, output,session) {
       ksdfx<<-fread("Kinase_Substrate_Dataset",data.table = FALSE)
       ksdf.human<-ksdfx[ksdfx$KIN_ORGANISM=="human"&ksdfx$SUB_ORGANISM=="human",]
       ksdf.human1<-unique(ksdf.human[,c(1,3,7,8,10)])
+    }else if(input$ksdatabasetype==2){
+      ksdf.human1<-read.csv("kinaselibrarydb_top1.csv",stringsAsFactors = F)
+      #ksdf.human1<-kinaselibrarydb1#[,-ncol(kinaselibrarydb1)]
     }else{
-      ksdf.human1<-read.csv("kinaselibrarydb.csv",stringsAsFactors = F)
+      #ksdf.human1<-read.csv("kinaselibrarydb.csv",stringsAsFactors = F)
+      ksdf.human1<-read.csv("kinaselibrarydb_above99.csv",stringsAsFactors = F)
+      #ksdf.human1<-kinaselibrarydb1#[,-ncol(kinaselibrarydb1)]
     }
     datareaddqblast<<-blastresout2()
     datareaddqblast<-datareaddqblast[datareaddqblast$Center.aa.match!="Not match",]
@@ -3237,7 +3242,7 @@ server <- function(input, output,session) {
         Direction[j]<-ifelse(N4/nrow(x2)>nrow(Bg.KSj)/N.total,"greater","less")
         Substrates[j]<-paste(Bg.Q.inter,collapse = "/")
         
-        incProgress(1/length(PsP.kinases.id), detail = paste("index", j))
+        incProgress(1, detail = paste("index", j))#/length(PsP.kinases.id)
       }
     })
     Segments.KS.enrich<-data.frame(Kinases.ID=PsP.kinases.id,
@@ -3345,28 +3350,56 @@ server <- function(input, output,session) {
         list(nodesdf=nodesdf,edgesdf=edgesdf)
       })
       output$cmheatmappic<-renderPlot({
-        nodesdf<-cmheatmappicdataout()$nodesdf
-        edgesdf<-cmheatmappicdataout()$edgesdf
+        nodesdf<<-cmheatmappicdataout()$nodesdf
+        edgesdf<<-cmheatmappicdataout()$edgesdf
         gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf)
         V(gp)$Groups <- nodesdf$Groups
         #,layout="stress"
-        ggraph(gp, layout = 'kk')+
-          geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
-          geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
-          scale_color_brewer(palette = "Set1")+
-          theme_graph(base_family="sans")
+        if(nrow(edgesdf)<=200){
+          ggraph(gp, layout = 'kk')+
+            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
+            scale_color_brewer(palette = "Set1")+
+            theme_graph(base_family="sans")
+        }else{
+          nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
+          nodesdf1$name1<-nodesdf$name
+          nodesdf1$name1[nodesdf$Groups=="Substrate"]<-""
+          edgesdf<-cmheatmappicdataout()$edgesdf
+          gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
+          V(gp)$Groups <- nodesdf$Groups
+          ggraph(gp, layout = 'stress')+
+            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
+            scale_color_brewer(palette = "Set1")+
+            theme_graph(base_family="sans")
+        }
       },height = cmheatmap_height)
       cmheatmappicout<-reactive({
-        nodesdf<-cmheatmappicdataout()$nodesdf
-        edgesdf<-cmheatmappicdataout()$edgesdf
+        nodesdf<<-cmheatmappicdataout()$nodesdf
+        edgesdf<<-cmheatmappicdataout()$edgesdf
         gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf)
         V(gp)$Groups <- nodesdf$Groups
         #,layout="stress"
-        ggraph(gp, layout = 'kk')+
-          geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
-          geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
-          scale_color_brewer(palette = "Set1")+
-          theme_graph(base_family="sans")
+        if(nrow(edgesdf)<=200){
+          ggraph(gp, layout = 'kk')+
+            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
+            scale_color_brewer(palette = "Set1")+
+            theme_graph(base_family="sans")
+        }else{
+          nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
+          nodesdf1$name1<-nodesdf$name
+          nodesdf1$name1[nodesdf$Groups=="Substrate"]<-""
+          edgesdf<-cmheatmappicdataout()$edgesdf
+          gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
+          V(gp)$Groups <- nodesdf$Groups
+          ggraph(gp, layout = 'stress')+
+            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
+            scale_color_brewer(palette = "Set1")+
+            theme_graph(base_family="sans")
+        }
       })
       output$cmheatmappicdl<-downloadHandler(
         filename = function(){paste("KinaseSubstrate_network",usertimenum,".pdf",sep="")},
