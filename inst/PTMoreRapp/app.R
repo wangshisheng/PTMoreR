@@ -3071,7 +3071,7 @@ server <- function(input, output,session) {
     #KSData.filter<-KSData[,c(1,3,7,8)]#,4,9
     if(input$ksdatabasetype==1){
       KSData<<-read.csv("Kinase_Substrate_Dataset.csv",stringsAsFactors = F)
-      KSData.filter<-KSData[,c(1,3,7,8)]#,4,9
+      KSData.filter<-KSData[,c(1,3,7,8,10)]#,4,9
       #ksdfx<<-fread("Kinase_Substrate_Dataset",data.table = FALSE)
       #ksdf.human<-ksdfx[ksdfx$KIN_ORGANISM=="human"&ksdfx$SUB_ORGANISM=="human",]
       #ksdf.human1<-unique(ksdf.human[,c(1,3,7,8,10)])
@@ -3082,15 +3082,17 @@ server <- function(input, output,session) {
       kinaselibrarydb1<-read.csv("kinaselibrarydb_above99.csv",stringsAsFactors = F)
       KSData.filter<-kinaselibrarydb1[,-ncol(kinaselibrarydb1)]
     }
-    KSData.filter<<-KSData.filter
+    KSData.filter1<-KSData.filter<<-KSData.filter
+    KSData.filter1$PRO.CombinedID<-paste0(KSData.filter$SUB_ACC_ID,"_",KSData.filter$SUB_MOD_RSD)
     datareaddqblast<<-blastresout2()
     datareaddqblast<-datareaddqblast[datareaddqblast$Center.aa.match!="Not match",]
     if(input$annotationxuanze==1){
       datareaddqblast1<-datareaddqblast[,c("Pep.upload","Pep.all.index","Center.amino.acid",
-                                           "Seqwindows","PRO.from.Database","PROindex.from.Database")]
-      datareaddqblast2<-base::merge(datareaddqblast1,KSData.filter,by.x="PRO.from.Database",
-                                    by.y="KIN_ACC_ID",sort=FALSE)
-      datareaddqblast2<-datareaddqblast2[,c(1,8,2:7,9)]
+                                           "Seqwindows","PRO.from.Database",
+                                           "PROindex.from.Database","PRO.CombinedID")]
+      datareaddqblast2<-base::merge(datareaddqblast1,KSData.filter1,by.x="PRO.CombinedID",
+                                    by.y="PRO.CombinedID",sort=FALSE)#PRO.from.Database KIN_ACC_ID
+      datareaddqblast2<-datareaddqblast2[,c(10,11,2,5,4,7,9,8)]#1,8,2:7,9
       #if(input$matchtypex==1){
       #  datareaddqblast2<-base::merge(datareaddqblast1,KSData.filter,by.x="PRO.from.Database",
       #                                  by.y="KIN_ACC_ID",sort=FALSE)
@@ -3101,15 +3103,20 @@ server <- function(input, output,session) {
       #  datareaddqblast2<-datareaddqblast2[,c(8,1:7,9)]
       #}
       datareaddqblast3<-unique(datareaddqblast2)
-      colnames(datareaddqblast3)[1:2]<-c("KIN_ACC_ID","SUB_ACC_ID")
+      #colnames(datareaddqblast3)[1:2]<-c("KIN_ACC_ID","SUB_ACC_ID")
+      colnames(datareaddqblast3)<-c("SUB_ACC_ID","SUB_GENE","Uploaded Peptides","Sequence Windows",
+                                    "Center amino acid",
+                                    "Modified Amino Acid Position in Protein Sequence",
+                                    "KIN_ACC_ID","KIN_GENE")
     }
     
     if(input$annotationxuanze==2){
       datareaddqblast1<-datareaddqblast[,c("Pep.upload","Pep.all.index","Center.amino.acids.Other",
-                                           "Seqwindows.Other","PRO.from.Other","PROindex.from.Other")]
-      datareaddqblast2<-base::merge(datareaddqblast1,KSData.filter,by.x="PRO.from.Other",
-                                    by.y="KIN_ACC_ID",sort=FALSE)
-      datareaddqblast2<-datareaddqblast2[,c(1,8,2:7,9)]
+                                           "Seqwindows.Other","PRO.from.Other","PROindex.from.Other",
+                                           "PRO.CombinedID.Other")]
+      datareaddqblast2<-base::merge(datareaddqblast1,KSData.filter1,by.x="PRO.CombinedID.Other",
+                                    by.y="PRO.CombinedID",sort=FALSE)#PRO.from.Other KIN_ACC_ID
+      datareaddqblast2<-datareaddqblast2[,c(10,11,2,5,4,7,9,8)]#1,8,2:7,9
       #if(input$matchtypex==1){
       #  datareaddqblast2<-base::merge(datareaddqblast1,KSData.filter,by.x="PRO.from.Other",
       #                                by.y="KIN_ACC_ID",sort=FALSE)
@@ -3120,7 +3127,11 @@ server <- function(input, output,session) {
       #  datareaddqblast2<-datareaddqblast2[,c(8,1:7,9)]
       #}
       datareaddqblast3<-unique(datareaddqblast2)
-      colnames(datareaddqblast3)[1:2]<-c("KIN_ACC_ID","SUB_ACC_ID")
+      #colnames(datareaddqblast3)[1:2]<-c("KIN_ACC_ID","SUB_ACC_ID")
+      colnames(datareaddqblast3)<-c("SUB_ACC_ID","SUB_GENE","Uploaded Peptides","Sequence Windows",
+                                    "Center amino acid",
+                                    "Blasted Modified Amino Acid Position in Protein Sequence",
+                                    "KIN_ACC_ID","KIN_GENE")
     }
     if(input$annotationxuanze==3){
       datareaddqblast3<-data.frame(KIN_ACC_ID="ALL",stringsAsFactors = F)
@@ -3327,13 +3338,13 @@ server <- function(input, output,session) {
           dfmerge<-dfmerge1[dfmerge1$KIN_ACC_ID%in%kinasemotifx,]
         }
         if(input$genenamesif){
-          edgesdf<-data.frame(from=dfmerge$GENE,to=dfmerge$SUB_GENE,stringsAsFactors = FALSE)
+          edgesdf<-data.frame(from=dfmerge$KIN_GENE,to=dfmerge$SUB_GENE,stringsAsFactors = FALSE)
           edgesdf<-unique(edgesdf)
-          nodesdf1<-data.frame(name=c(dfmerge$GENE,dfmerge$SUB_GENE),
-                               Groups=c(rep("Kinase",length(dfmerge$GENE)),rep("Substrate",length(dfmerge$SUB_GENE))),
+          nodesdf1<-data.frame(name=c(dfmerge$KIN_GENE,dfmerge$SUB_GENE),
+                               Groups=c(rep("Kinase",length(dfmerge$KIN_GENE)),rep("Substrate",length(dfmerge$SUB_GENE))),
                                stringsAsFactors = FALSE)
           nodesdf3<-nodesdf2<-unique(nodesdf1)
-          jiaohudouyou<-intersect(dfmerge$GENE,dfmerge$SUB_GENE)
+          jiaohudouyou<-intersect(dfmerge$KIN_GENE,dfmerge$SUB_GENE)
           if(length(jiaohudouyou)>0) nodesdf3$Groups[nodesdf2$name %in% jiaohudouyou]<-"Combine"
           nodesdf<-unique(nodesdf3)
         }else{
