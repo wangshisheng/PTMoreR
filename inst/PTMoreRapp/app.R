@@ -3077,10 +3077,10 @@ server <- function(input, output,session) {
       #ksdf.human1<-unique(ksdf.human[,c(1,3,7,8,10)])
     }else if(input$ksdatabasetype==2){
       kinaselibrarydb1<-read.csv("kinaselibrarydb_top1.csv",stringsAsFactors = F)
-      KSData.filter<-kinaselibrarydb1[,-ncol(kinaselibrarydb1)]
+      KSData.filter<-kinaselibrarydb1#[,-ncol(kinaselibrarydb1)]
     }else{
       kinaselibrarydb1<-read.csv("kinaselibrarydb_above99.csv",stringsAsFactors = F)
-      KSData.filter<-kinaselibrarydb1[,-ncol(kinaselibrarydb1)]
+      KSData.filter<-kinaselibrarydb1#[,-ncol(kinaselibrarydb1)]
     }
     KSData.filter1<-KSData.filter<<-KSData.filter
     KSData.filter1$PRO.CombinedID<-paste0(KSData.filter$SUB_ACC_ID,"_",KSData.filter$SUB_MOD_RSD)
@@ -3379,7 +3379,7 @@ server <- function(input, output,session) {
           edgesdf<-cmheatmappicdataout()$edgesdf
           gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
           V(gp)$Groups <- nodesdf$Groups
-          ggraph(gp, layout = 'stress')+
+          ggraph(gp, layout = 'kk')+
             geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
             geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
             scale_color_brewer(palette = "Set1")+
@@ -3405,7 +3405,7 @@ server <- function(input, output,session) {
           edgesdf<-cmheatmappicdataout()$edgesdf
           gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
           V(gp)$Groups <- nodesdf$Groups
-          ggraph(gp, layout = 'stress')+
+          ggraph(gp, layout = 'kk')+
             geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
             geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
             scale_color_brewer(palette = "Set1")+
