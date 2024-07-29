@@ -3337,27 +3337,36 @@ server <- function(input, output,session) {
         }else{
           dfmerge<-dfmerge1[dfmerge1$KIN_ACC_ID%in%kinasemotifx,]
         }
-        if(input$genenamesif){
-          edgesdf<-data.frame(from=dfmerge$KIN_GENE,to=dfmerge$SUB_GENE,stringsAsFactors = FALSE)
-          edgesdf<-unique(edgesdf)
-          nodesdf1<-data.frame(name=c(dfmerge$KIN_GENE,dfmerge$SUB_GENE),
-                               Groups=c(rep("Kinase",length(dfmerge$KIN_GENE)),rep("Substrate",length(dfmerge$SUB_GENE))),
-                               stringsAsFactors = FALSE)
-          nodesdf3<-nodesdf2<-unique(nodesdf1)
-          jiaohudouyou<-intersect(dfmerge$KIN_GENE,dfmerge$SUB_GENE)
-          if(length(jiaohudouyou)>0) nodesdf3$Groups[nodesdf2$name %in% jiaohudouyou]<-"Combine"
-          nodesdf<-unique(nodesdf3)
-        }else{
-          edgesdf<-data.frame(from=dfmerge$KIN_ACC_ID,to=dfmerge$SUB_ACC_ID,stringsAsFactors = FALSE)
-          edgesdf<-unique(edgesdf)
-          nodesdf1<-data.frame(name=c(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID),
-                               Groups=c(rep("Kinase",length(dfmerge$KIN_ACC_ID)),rep("Substrate",length(dfmerge$SUB_ACC_ID))),
-                               stringsAsFactors = FALSE)
-          nodesdf3<-nodesdf2<-unique(nodesdf1)
-          jiaohudouyou<-intersect(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID)
-          if(length(jiaohudouyou)>0) nodesdf3$Groups[nodesdf2$name %in% jiaohudouyou]<-"Combine"
-          nodesdf<-unique(nodesdf3)
-        }
+        #if(input$genenamesif){
+        #  edgesdf<-data.frame(from=dfmerge$KIN_GENE,to=dfmerge$SUB_GENE,stringsAsFactors = FALSE)
+        #  edgesdf<-unique(edgesdf)
+        #  nodesdf1<-data.frame(name=c(dfmerge$KIN_GENE,dfmerge$SUB_GENE),
+        #                       Groups=c(rep("Kinase",length(dfmerge$KIN_GENE)),rep("Substrate",length(dfmerge$SUB_GENE))),
+        #                       stringsAsFactors = FALSE)
+        #  nodesdf3<-nodesdf2<-unique(nodesdf1)
+        #  jiaohudouyou<-intersect(dfmerge$KIN_GENE,dfmerge$SUB_GENE)
+        #  if(length(jiaohudouyou)>0) nodesdf3$Groups[nodesdf2$name %in% jiaohudouyou]<-"Combine"
+        #  nodesdf<-unique(nodesdf3)
+        #}else{
+        #  edgesdf<-data.frame(from=dfmerge$KIN_ACC_ID,to=dfmerge$SUB_ACC_ID,stringsAsFactors = FALSE)
+        #  edgesdf<-unique(edgesdf)
+        #  nodesdf1<-data.frame(name=c(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID),
+        #                       Groups=c(rep("Kinase",length(dfmerge$KIN_ACC_ID)),rep("Substrate",length(dfmerge$SUB_ACC_ID))),
+        #                       stringsAsFactors = FALSE)
+        #  nodesdf3<-nodesdf2<-unique(nodesdf1)
+        #  jiaohudouyou<-intersect(dfmerge$KIN_ACC_ID,dfmerge$SUB_ACC_ID)
+        #  if(length(jiaohudouyou)>0) nodesdf3$Groups[nodesdf2$name %in% jiaohudouyou]<-"Combine"
+        #  nodesdf<-unique(nodesdf3)
+        #}
+        edgesdf<-data.frame(from=dfmerge$KIN_GENE,to=dfmerge$SUB_GENE,stringsAsFactors = FALSE)
+        edgesdf<-unique(edgesdf)
+        nodesdf1<-data.frame(name=c(dfmerge$KIN_GENE,dfmerge$SUB_GENE),
+                             Groups=c(rep("Kinase",length(dfmerge$KIN_GENE)),rep("Substrate",length(dfmerge$SUB_GENE))),
+                             stringsAsFactors = FALSE)
+        nodesdf3<-nodesdf2<-unique(nodesdf1)
+        jiaohudouyou<-intersect(dfmerge$KIN_GENE,dfmerge$SUB_GENE)
+        if(length(jiaohudouyou)>0) nodesdf3$Groups[nodesdf2$name %in% jiaohudouyou]<-"Combine"
+        nodesdf<-unique(nodesdf3)
         list(nodesdf=nodesdf,edgesdf=edgesdf)
       })
       output$cmheatmappic<-renderPlot({
@@ -3366,25 +3375,50 @@ server <- function(input, output,session) {
         gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf)
         V(gp)$Groups <- nodesdf$Groups
         #,layout="stress"
-        if(nrow(edgesdf)<=200){
-          ggraph(gp, layout = 'kk')+
-            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
-            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
-            scale_color_brewer(palette = "Set1")+
-            theme_graph(base_family="sans")
+        if(nrow(edgesdf)>0){
+          if(input$genenamesif){
+            ggraph(gp, layout = 'kk')+
+              geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(angle = 20,length = unit(3, 'mm'),ends = "last",type="closed"),end_cap = circle(2, 'mm'),show.legend=FALSE)+
+              geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
+              scale_color_brewer(palette = "Set1")+
+              theme_graph(base_family="sans")
+          }else{
+            nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
+            nodesdf1$name1<-nodesdf$name
+            nodesdf1$name1<-""#[nodesdf$Groups=="Substrate"]
+            edgesdf<-cmheatmappicdataout()$edgesdf
+            gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
+            V(gp)$Groups <- nodesdf$Groups
+            ggraph(gp, layout = 'kk')+
+              geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(angle = 20,length = unit(3, 'mm'),ends = "last",type="closed"),end_cap = circle(2, 'mm'),show.legend=FALSE)+
+              geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
+              scale_color_brewer(palette = "Set1")+
+              theme_graph(base_family="sans")
+          }
         }else{
-          nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
-          nodesdf1$name1<-nodesdf$name
-          nodesdf1$name1[nodesdf$Groups=="Substrate"]<-""
-          edgesdf<-cmheatmappicdataout()$edgesdf
-          gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
-          V(gp)$Groups <- nodesdf$Groups
-          ggraph(gp, layout = 'kk')+
-            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
-            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
-            scale_color_brewer(palette = "Set1")+
-            theme_graph(base_family="sans")
+          ggplot() + 
+            annotate("text", x = 4, y = 25, size=6,col="red", label = 'The uploaded peptides are not Human. Please try \n "Blasted peptide annotation" for the kinase library annotation.') + 
+            theme_void()
         }
+        #if(nrow(edgesdf)<=200){
+        #  ggraph(gp, layout = 'kk')+
+        #    geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+        #    geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
+        #    scale_color_brewer(palette = "Set1")+
+        #    theme_graph(base_family="sans")
+        #}else{
+        #  nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
+        #  nodesdf1$name1<-nodesdf$name
+        #  nodesdf1$name1[nodesdf$Groups=="Substrate"]<-""
+        #  edgesdf<-cmheatmappicdataout()$edgesdf
+        #  gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
+        #  V(gp)$Groups <- nodesdf$Groups
+        #  ggraph(gp, layout = 'kk')+
+        #    geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+        #    geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
+        #    scale_color_brewer(palette = "Set1")+
+        #    theme_graph(base_family="sans")
+        #}
       },height = cmheatmap_height)
       cmheatmappicout<-reactive({
         nodesdf<<-cmheatmappicdataout()$nodesdf
@@ -3392,25 +3426,50 @@ server <- function(input, output,session) {
         gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf)
         V(gp)$Groups <- nodesdf$Groups
         #,layout="stress"
-        if(nrow(edgesdf)<=200){
-          ggraph(gp, layout = 'kk')+
-            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
-            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
-            scale_color_brewer(palette = "Set1")+
-            theme_graph(base_family="sans")
+        if(nrow(edgesdf)>0){
+          if(input$genenamesif){
+            ggraph(gp, layout = 'kk')+
+              geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(angle = 20,length = unit(3, 'mm'),ends = "last",type="closed"),end_cap = circle(2, 'mm'),show.legend=FALSE)+
+              geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
+              scale_color_brewer(palette = "Set1")+
+              theme_graph(base_family="sans")
+          }else{
+            nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
+            nodesdf1$name1<-nodesdf$name
+            nodesdf1$name1<-""#[nodesdf$Groups=="Substrate"]
+            edgesdf<-cmheatmappicdataout()$edgesdf
+            gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
+            V(gp)$Groups <- nodesdf$Groups
+            ggraph(gp, layout = 'kk')+
+              geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(angle = 20,length = unit(3, 'mm'),ends = "last",type="closed"),end_cap = circle(2, 'mm'),show.legend=FALSE)+
+              geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
+              scale_color_brewer(palette = "Set1")+
+              theme_graph(base_family="sans")
+          }
         }else{
-          nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
-          nodesdf1$name1<-nodesdf$name
-          nodesdf1$name1[nodesdf$Groups=="Substrate"]<-""
-          edgesdf<-cmheatmappicdataout()$edgesdf
-          gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
-          V(gp)$Groups <- nodesdf$Groups
-          ggraph(gp, layout = 'kk')+
-            geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
-            geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
-            scale_color_brewer(palette = "Set1")+
-            theme_graph(base_family="sans")
+          ggplot() + 
+            annotate("text", x = 4, y = 25, size=6,col="red", label = 'The uploaded peptides are not Human. Please try \n "Blasted peptide annotation" for the kinase library annotation.') + 
+            theme_void()
         }
+        #if(nrow(edgesdf)<=200){
+        #  ggraph(gp, layout = 'kk')+
+        #    geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+        #    geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name), nudge_x = 0.1, nudge_y = 0.2)+
+        #    scale_color_brewer(palette = "Set1")+
+        #    theme_graph(base_family="sans")
+        #}else{
+        #  nodesdf1<-nodesdf<-cmheatmappicdataout()$nodesdf
+        #  nodesdf1$name1<-nodesdf$name
+        #  nodesdf1$name1[nodesdf$Groups=="Substrate"]<-""
+        #  edgesdf<-cmheatmappicdataout()$edgesdf
+        #  gp<-graph_from_data_frame(edgesdf, directed=TRUE, vertices=nodesdf1)
+        #  V(gp)$Groups <- nodesdf$Groups
+        #  ggraph(gp, layout = 'kk')+
+        #    geom_edge_link(aes(col=I("grey60")),width=0.6,arrow = arrow(length = unit(4, 'mm')),show.legend=FALSE)+
+        #    geom_node_point(aes(col=Groups),size=5)+geom_node_text(aes(label = name1), nudge_x = 0.1, nudge_y = 0.2)+
+        #    scale_color_brewer(palette = "Set1")+
+        #    theme_graph(base_family="sans")
+        #}
       })
       output$cmheatmappicdl<-downloadHandler(
         filename = function(){paste("KinaseSubstrate_network",usertimenum,".pdf",sep="")},
