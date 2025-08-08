@@ -97,15 +97,15 @@ ui <- dashboardPage(
             column(
               width = 12,
               box(
-                width = 12, title = strong("User Guide"), 
-                status = "warning", solidHeader = TRUE, collapsible = TRUE, 
-                collapsed = FALSE, closable = FALSE, 
+                width = 12, title = strong("User Guide"),
+                status = "warning", solidHeader = TRUE, collapsible = TRUE,
+                collapsed = FALSE, closable = FALSE,
                 h4("There are 6 steps to process data in PTMoreR, please do it step by step:"),
-                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 1. Import Sequence Data.</b> In this part, users can upload their own peptide sequences with modification (e.g. phosphorylation). The example data were obtained from Rat and can be found when users click 'Load example data' below.<br />")), 
-                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 2. Pre-alignment.</b> This step aligns those peptide sequences with the background database (protein sequences) and force the modified sites/residues to be central sites, then users can get the standard peptide window sequences (e.g. 15 amino acid length by default).<br />")), 
-                #div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to the other species.</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which can be chosen below.<br />")), 
+                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 1. Import Sequence Data.</b> In this part, users can upload their own peptide sequences with modification (e.g. phosphorylation). The example data were obtained from Rat and can be found when users click 'Load example data' below.<br />")),
+                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 2. Pre-alignment.</b> This step aligns those peptide sequences with the background database (protein sequences) and force the modified sites/residues to be central sites, then users can get the standard peptide window sequences (e.g. 15 amino acid length by default).<br />")),
+                #div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to the other species.</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which can be chosen below.<br />")),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to Human (or other species).</b> This step will map the PTM site and protein sequences and identifiers between two species (One is that you chose in Step 1 and the other is that you want to blast to, which is Human by default. Please note: if users choose other species, this tool would take more time to blast.<br />")),
-                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 4. Motif Enrichment and Plot.</b> This step will find overrepresented sequence motifs for uploaded peptides and blasted peptides respectively, then visualize them. Uploaded peptides here means those modified peptides uploaded directly by users. 
+                div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 4. Motif Enrichment and Plot.</b> This step will find overrepresented sequence motifs for uploaded peptides and blasted peptides respectively, then visualize them. Uploaded peptides here means those modified peptides uploaded directly by users.
                 Blasted peptides here means those modified peptides mapped to human after blasting.<br />")),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 5. Annotation and enrichment analysis based on Kinase-Substrate database.</b> This step will offer more flexible annotation based on kinase-substrate databases (e.g. PhosphoSitePlus) and network plots.<br />")),
                 div(style="font-size:110%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 6. Interaction Plot.</b> This step will visualize the expression of modification sites on interacting proteins on the basis of protein-protein interaction data."))
@@ -130,9 +130,9 @@ ui <- dashboardPage(
               div(style="margin-top:10px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 1. Import Sequence Data.</b>")),
               column(
                 width = 5,
-                box(width = 12, inputId = "input_card7", 
-                    title = strong("Input Parameters"), status = "primary", 
-                    solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE, 
+                box(width = 12, inputId = "input_card7",
+                    title = strong("Input Parameters"), status = "primary",
+                    solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE,
                     closable = FALSE,prettyRadioButtons(
                       inputId = "loadseqdatatype",
                       label = "",
@@ -220,8 +220,8 @@ ui <- dashboardPage(
               ),
               column(
                 width = 7,
-                box(width = 12, inputId = "report_card1", 
-                    title = strong("Results"), status = "success", solidHeader = TRUE, 
+                box(width = 12, inputId = "report_card1",
+                    title = strong("Results"), status = "success", solidHeader = TRUE,
                     collapsible = TRUE, collapsed = TRUE, closable = FALSE,
                     h4("Sequence data:"),
                     dataTableOutput("seqrawdata"))
@@ -232,8 +232,8 @@ ui <- dashboardPage(
               div(style="margin-top:0px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 2. Pre-alignment.</b>")),
               column(
                 width = 5,
-                box(width = 12, inputId = "input_card2", 
-                    title = strong("Input Parameters"), status = "primary", 
+                box(width = 12, inputId = "input_card2",
+                    title = strong("Input Parameters"), status = "primary",
                     solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE,
                     #div(id="seqalignif_div",checkboxInput('seqalignif', '1. Pre-aligned or not?', TRUE)),
                     #bsTooltip("seqalignif_div","Whether to pre-align your sequences. If your sequences are standard (e.g. 15 length amino acids), you can unselect this parameter. Default is true.",
@@ -251,8 +251,8 @@ ui <- dashboardPage(
               ),
               column(
                 width = 7,
-                box(width = 12,inputId = "report_card2", 
-                    title = strong("Results"), status = "success", solidHeader = TRUE, 
+                box(width = 12,inputId = "report_card2",
+                    title = strong("Results"), status = "success", solidHeader = TRUE,
                     collapsible = TRUE, collapsed = TRUE, closable = FALSE,
                     h4("Pre-alignment table:"),
                     fluidRow(
@@ -276,8 +276,8 @@ ui <- dashboardPage(
               div(style="margin-top:0px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 3. Blast to Human (or other species).</b>")),
               column(
                 width = 5,
-                box(width = 12, inputId = "input_card3", 
-                    title = strong("Input Parameters"), status = "primary", 
+                box(width = 12, inputId = "input_card3",
+                    title = strong("Input Parameters"), status = "primary",
                     solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE,
                     #div(id="preblastif_div",checkboxInput("preblastif","1. Using pre-blast results from Human or not?",TRUE)),
                     #bsTooltip("preblastif_div",'By default, the pre-blast results only contain Human data, which means that if true, you will map your data with Human protein sequences. Otherwise, if you want to blast other species, you can unselect this parameter and select/upload the fasta file below. Please Note: This step is a little time-consuming! If true, this tool will retrieve the pre-blast results and it will be faster to finish this step. Otherwise, this tool will blast the uploaded sequences against those protein sequences of the other species, which will take more time, perhaps several hours.',
@@ -340,8 +340,8 @@ ui <- dashboardPage(
               ),
               column(
                 width = 7,
-                box(width = 12, inputId = "report_card3", 
-                    title = strong("Results"), status = "success", solidHeader = TRUE, 
+                box(width = 12, inputId = "report_card3",
+                    title = strong("Results"), status = "success", solidHeader = TRUE,
                     collapsible = TRUE, collapsed = TRUE, closable = FALSE,
                     h4("Final blasted table:"),
                     fluidRow(
@@ -391,7 +391,7 @@ ui <- dashboardPage(
               column(
                 width = 7,
                 box(width = 12, inputId = "report_card4",
-                    title = strong("Results"), status = "success", solidHeader = TRUE, 
+                    title = strong("Results"), status = "success", solidHeader = TRUE,
                     collapsible = TRUE, collapsed = TRUE, closable = FALSE,
                     radioButtons(
                       "motiffujidfxuanze",
@@ -533,8 +533,8 @@ ui <- dashboardPage(
               div(style="margin-top:0px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 5. Annotation and enrichment analysis based on Kinase-Substrate database.</b>")),
               column(
                 width = 5,
-                box(width = 12, inputId = "input_card5", 
-                    title = strong("Input Parameters"), status = "primary", 
+                box(width = 12, inputId = "input_card5",
+                    title = strong("Input Parameters"), status = "primary",
                     solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE,
                     uiOutput("kinasemotifui"),
                     div(id='genenamesif_div',checkboxInput("genenamesif","2. Show gene names or not?",TRUE)),
@@ -550,8 +550,8 @@ ui <- dashboardPage(
               ),
               column(
                 width = 7,
-                box(width = 12, inputId = "report_card5", 
-                    title = strong("Results"), status = "success", solidHeader = TRUE, 
+                box(width = 12, inputId = "report_card5",
+                    title = strong("Results"), status = "success", solidHeader = TRUE,
                     collapsible = TRUE, collapsed = TRUE, closable = FALSE,
                     h4("Annotation tables:"),
                     radioButtons(
@@ -615,8 +615,8 @@ ui <- dashboardPage(
               div(style="margin-top:0px;margin-bottom:5px;color:#C70039;font-size:120%",HTML("&nbsp;&nbsp;&nbsp;&nbsp;<b>Step 6. Interaction Plot.</b>")),
               column(
                 width = 5,
-                box(width = 12, inputId = "input_card6", 
-                    title = strong("Input Parameters"), status = "primary", 
+                box(width = 12, inputId = "input_card6",
+                    title = strong("Input Parameters"), status = "primary",
                     solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE,
                     radioButtons(
                       "loaddatatype",
@@ -843,7 +843,7 @@ server <- function(input, output,session) {
     }
     datatable(dataread, options = list(pageLength = 10,autoWidth = F))
   })
-  
+
   seqrawdataout<-reactive({
     library(Biostrings)
     library(stringi)
@@ -875,7 +875,7 @@ server <- function(input, output,session) {
             }
           }
           Peptides[i]<-pep1
-          
+
           incProgress(1/nrow(datareadx), detail = paste("index", i))
         }
       })
@@ -888,7 +888,7 @@ server <- function(input, output,session) {
         Peptidesx<-gsub("_","",uploaddata1, perl = TRUE)
         Peptidesx<-gsub("\\[Phospho \\(STY\\)\\]",input$centralresfuhao,Peptidesx, perl = TRUE)#"#"
         Peptidesx2<-str_replace_all(Peptidesx,"\\[.*?\\]","")
-        
+
         shiny::incProgress(1, detail = "Generating data")
       })
       dataconvert<-data.frame(AnnotatedPeps=Peptidesx2,stringsAsFactors = FALSE)
@@ -953,7 +953,7 @@ server <- function(input, output,session) {
     datareadbj<-seqbjdataout()
     datatable(datareadbj, options = list(pageLength = 10,autoWidth = F))
   })
-  
+
   fastaseqownout<-reactive({
     files <- input$fastafileown
     if(is.null(files)){
@@ -980,14 +980,11 @@ server <- function(input, output,session) {
         pro_seqdf_rown2<-unlist(lapply(rownames(pro_seqdf1),function(x) strsplit(x,"\\|")[[1]][2]))
         if(sum(duplicated(pro_seqdf_rown1))>=1 & sum(duplicated(pro_seqdf_rown2))>=1){
           pro_seqdf_rown<-rownames(pro_seqdf1)
-        }
-        else if(sum(duplicated(pro_seqdf_rown1))>=1){
+        }else if(sum(duplicated(pro_seqdf_rown1))>=1){
           pro_seqdf_rown<-pro_seqdf_rown2
-        }
-        else if(sum(duplicated(pro_seqdf_rown2))>=1){
+        }else if(sum(duplicated(pro_seqdf_rown2))>=1){
           pro_seqdf_rown<-pro_seqdf_rown1
-        }
-        else{
+        }else{
           pro_seqdf_rown<-rownames(pro_seqdf1)
         }
         rownames(pro_seqdf1)<-pro_seqdf_rown
@@ -1406,7 +1403,7 @@ server <- function(input, output,session) {
       uploaddata1$PRO.CombinedID<-PRO.CombinedID
       datareaddq<-uploaddata1
     }
-    
+
     if(input$seqalignhanif){#FALSE
       containif<-rep("No",nrow(datareaddq))
       if(ncol(datareaddq)==1){
@@ -1451,7 +1448,7 @@ server <- function(input, output,session) {
           pepindexi2<-as.numeric(strsplit(datareaddqx$Pep.main.index[i],";")[[1]])
           pepindexi<-setdiff(pepindexi1,pepindexi2)
           seqwindowi<-strsplit(datareaddqx$Seqwindows[i],";")[[1]]
-          
+
           Seqwindows_multix<-vector()
           for(ii in 1:length(pepindexi2)){
             seqwindowix<-strsplit(seqwindowi[ii],"")[[1]]
@@ -1483,7 +1480,7 @@ server <- function(input, output,session) {
           for(i in 1:nrow(datareaddqx2)){
             pepindexi2<-as.numeric(strsplit(datareaddqx2$Pep.main.index[i],";")[[1]])
             seqwindowi<-strsplit(datareaddqx2$Seqwindows[i],";")[[1]]
-            
+
             Seqwindows_multix_main<-vector()
             for(ii in 1:length(pepindexi2)){
               seqwindowix<-strsplit(seqwindowi[ii],"")[[1]]
@@ -1495,7 +1492,7 @@ server <- function(input, output,session) {
                 seqwindowix[posi]<-"Z"
               }
               Seqwindows_multix_main[ii]<-paste(seqwindowix,collapse ="")
-              
+
             }
             Seqwindows_MultiSites_main[i]<-paste(Seqwindows_multix_main,collapse =";")
             incProgress(1/nrow(datareaddqx2), detail = paste("index", i))
@@ -1600,7 +1597,7 @@ server <- function(input, output,session) {
       )
     }
   )
-  
+
   output$seqduiqiplot<-renderPlot({
     library(ggsci)
     library(ggplot2)
@@ -1650,7 +1647,7 @@ server <- function(input, output,session) {
       dev.off()
     }
   )
-  
+
   output$seqduiqiduosite<-renderDataTable({
     datatable(seqduiqiduositeout(), options = list(pageLength = 10,autoWidth = F))
   })
@@ -1743,11 +1740,11 @@ server <- function(input, output,session) {
             }
             res <- dplyr::filter(res, perc_identity == max_len)
           }
-          if (nrow(res) > 1) 
+          if (nrow(res) > 1)
             res <- dplyr::slice(res, 1)
           return(res)
         }
-        
+
         withProgress(message = 'Blasting:',min = 0, max = 2, style = "notification", detail = "It will take about a long time......Please have a cup of coffee.", value = 1,{
           #blast_best_other <<- blast_best_hit(
           #  query   = datafasta,
@@ -1860,9 +1857,13 @@ server <- function(input, output,session) {
       }else{
         load(file=paste0("aligndatabase/",wuzhong,"_blast_best_seqs_9606.RData"))
       }
-      names(blastseqlist)<-unlist(lapply(names(blastseqlist),function(x){
-        strsplit(x,"\\|")[[1]][2]
-      }))
+      names1<-names(blastseqlist)[1]
+      if(length(grep("\\|",names1))>0){
+        names(blastseqlist)<-unlist(lapply(names(blastseqlist),function(x){
+          strsplit(x,"\\|")[[1]][2]
+        }))
+      }
+      blastseqlist
       #save(blastseqlist,file = paste("temp/Blast.Protein.Sequences.",wuzhong,".",wuzhong2,"_",usertimenum,".RData",sep=""))
     }else{
       library(dplyr)
@@ -1900,6 +1901,7 @@ server <- function(input, output,session) {
         })
         names(blastseqlist)<-blaseresdf$query_id
         save(blastseqlist,file = paste0("percentdatabase/",wuzhong,"_blast_best_seqs_",wuzhongother,".RData"))
+        save(blastseqlist,file = paste0("aligndatabase/",wuzhong,"_blast_best_seqs_",wuzhongother,".RData"))
       }
     }
     blastseqlist
@@ -2202,33 +2204,33 @@ server <- function(input, output,session) {
       output$blastres<-renderDataTable({
         blastresout2xx<-blastresout2()
         if(ncol(blastresout2xx)==17){
-          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton", 
-                                      "Main Modification Site in Uploaded Peptides", 
+          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton",
+                                      "Main Modification Site in Uploaded Peptides",
                                       "All Modification Site in Uploaded Peptides",
-                                      "Center amino acid", "Aligned Standard Peptides", 
-                                      "Protein ID from Database", 
-                                      "Modified Amino Acid Position in Protein Sequence", 
+                                      "Center amino acid", "Aligned Standard Peptides",
+                                      "Protein ID from Database",
+                                      "Modified Amino Acid Position in Protein Sequence",
                                       "Combined Protein Identifier",
-                                      "Blasted Center amino acid", "Blasted Standard Peptides", 
-                                      "Blasted Protein ID", 
-                                      "Blasted Modified Amino Acid Position in Protein Sequence", 
-                                      "Blasted Combined Protein Identifier", 
-                                      "Standard Peptides Matching Degree", 
+                                      "Blasted Center amino acid", "Blasted Standard Peptides",
+                                      "Blasted Protein ID",
+                                      "Blasted Modified Amino Acid Position in Protein Sequence",
+                                      "Blasted Combined Protein Identifier",
+                                      "Standard Peptides Matching Degree",
                                       "Window Similarity", "BLOSUM50 Score")
         }else{
-          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton", 
-                                      "Main Modification Site in Uploaded Peptides", 
+          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton",
+                                      "Main Modification Site in Uploaded Peptides",
                                       "All Modification Site in Uploaded Peptides",
-                                      "Center amino acid", "Aligned Standard Peptides", 
-                                      "Protein ID from Database", 
-                                      "Modified Amino Acid Position in Protein Sequence", 
-                                      "Combined Protein Identifier", 
-                                      "Regular Sequence Inclusion Check", 
-                                      "Blasted Center amino acid", "Blasted Standard Peptides", 
-                                      "Blasted Protein ID", 
-                                      "Blasted Modified Amino Acid Position in Protein Sequence", 
-                                      "Blasted Combined Protein Identifier", 
-                                      "Standard Peptides Matching Degree", 
+                                      "Center amino acid", "Aligned Standard Peptides",
+                                      "Protein ID from Database",
+                                      "Modified Amino Acid Position in Protein Sequence",
+                                      "Combined Protein Identifier",
+                                      "Regular Sequence Inclusion Check",
+                                      "Blasted Center amino acid", "Blasted Standard Peptides",
+                                      "Blasted Protein ID",
+                                      "Blasted Modified Amino Acid Position in Protein Sequence",
+                                      "Blasted Combined Protein Identifier",
+                                      "Standard Peptides Matching Degree",
                                       "Window Similarity", "BLOSUM50 Score")
         }
         emailtoid<<-input$emailto
@@ -2256,19 +2258,19 @@ server <- function(input, output,session) {
         filename = function(){paste("BlastToHuman_",usertimenum,".csv",sep="")},
         content = function(file){
           blastresout2xx<-blastresout2()
-          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton", 
-                                      "Main Modification Site in Uploaded Peptides", 
+          colnames(blastresout2xx)<-c("Uploaded Peptides", "Peptide Skeleton",
+                                      "Main Modification Site in Uploaded Peptides",
                                       "All Modification Site in Uploaded Peptides",
-                                      "Center amino acid", "Aligned Standard Peptides", 
-                                      "Protein ID from Database", 
-                                      "Modified Amino Acid Position in Protein Sequence", 
-                                      "Combined Protein Identifier", 
-                                      "Regular Sequence Inclusion Check", 
-                                      "Blasted Center amino acid", "Blasted Standard Peptides", 
-                                      "Blasted Protein ID", 
-                                      "Blasted Modified Amino Acid Position in Protein Sequence", 
-                                      "Blasted Combined Protein Identifier", 
-                                      "Standard Peptides Matching Degree", 
+                                      "Center amino acid", "Aligned Standard Peptides",
+                                      "Protein ID from Database",
+                                      "Modified Amino Acid Position in Protein Sequence",
+                                      "Combined Protein Identifier",
+                                      "Regular Sequence Inclusion Check",
+                                      "Blasted Center amino acid", "Blasted Standard Peptides",
+                                      "Blasted Protein ID",
+                                      "Blasted Modified Amino Acid Position in Protein Sequence",
+                                      "Blasted Combined Protein Identifier",
+                                      "Standard Peptides Matching Degree",
                                       "Window Similarity", "BLOSUM50 Score")
           write.csv(blastresout2(),file,row.names=FALSE)
         }
@@ -2341,10 +2343,10 @@ server <- function(input, output,session) {
         motseq <- motifx(fg.seqs=fgseqs, bg.seqs=unique(datareadbj[[1]]),central.res = input$centralres,
                          min.seqs = input$minseqsnum, pval.cutoff = input$pvalcutoff)
       }
-      
+
       shiny::incProgress(1, detail = "Generating data")
     })
-    
+
     #motseq<-motseq
     if(is.null(motseq)){
       stop("No enrichment results, perhaps you need to adjust the 'Minimum number' and/or 'P-value threshold' parameters~~")
@@ -2377,7 +2379,7 @@ server <- function(input, output,session) {
       fgseqsblast<-unique(unlist(lapply(datareaddqblast$Seqwindows.Other,function(x) strsplit(x,";|::")[[1]])))
       #fgseqsblast<-fgseqsblast[nchar(fgseqsblast)==(2*input$minseqs+1)]
     }
-    
+
     withProgress(message = 'Motif Enrichment:',min = 0, max = 2, style = "notification", detail = "Generating data", value = 1,{
       if(is.null(datareadbj)){
         if(input$xuanzebgdatabase==1){
@@ -2402,7 +2404,7 @@ server <- function(input, output,session) {
       }
       shiny::incProgress(1, detail = "Generating data")
     })
-    
+
     #motseq<-motseq
     if(is.null(motseqblast)){
       stop("No enrichment results, perhaps you need to adjust the 'Minimum number' and/or 'P-value threshold' parameters~~")
@@ -2497,7 +2499,7 @@ server <- function(input, output,session) {
       }
       shiny::incProgress(1, detail = "Generating data")
     })
-    
+
     #motseq<-motseq
     if(is.null(motseq)){
       stop("No enrichment results, perhaps you need to adjust the 'Minimum number' and/or 'P-value threshold' parameters~~")
@@ -2714,7 +2716,7 @@ server <- function(input, output,session) {
                   axis.title=element_text(size=16),legend.text = element_text(size = 12),
                   legend.title = element_text(size = 13))
         }
-        
+
         motiffujidf<-isolate(motiffujiout())
         enrichseqnumstr<-isolate(as.numeric(strsplit(input$enrichseqnum,"-|;|,")[[1]]))
         if(input$equalheightif){
@@ -2945,7 +2947,7 @@ server <- function(input, output,session) {
             width = ncol(weights1)
             diffMatrix = (weights1 - weights2)^2
             PWMDistance = sum(sqrt(colSums(diffMatrix)))/sqrt(2)/width
-            return(PWMDistance) 
+            return(PWMDistance)
           }
           cosine_similarity_pwm<-function(pwm1,pwm2){
             # 提取PWM的权重
@@ -3135,7 +3137,7 @@ server <- function(input, output,session) {
                                     "Modified Amino Acid Position in Protein Sequence",
                                     "KIN_ACC_ID","KIN_GENE")
     }
-    
+
     if(input$annotationxuanze==2){
       datareaddqblast1<-datareaddqblast[,c("Pep.upload","Pep.all.index","Center.amino.acids.Other",
                                            "Seqwindows.Other","PRO.from.Other","PROindex.from.Other",
@@ -3205,7 +3207,7 @@ server <- function(input, output,session) {
     #}
     datareaddqblast3
   })
-  
+
   output$kinasemotifui<-renderUI({
     if(input$annotationxuanze==1|input$annotationxuanze==2){
       kkdf<-kinasedataout()
@@ -3217,7 +3219,7 @@ server <- function(input, output,session) {
     #bsTooltip("kinasemotif","By default, 'All' is selected and means selecting all kinases to plot network. Otherwise, users can delete 'All' and select one or several kinases to plot network.",
     #          placement = "right",options = list(container = "body"))
   })
-  
+
   kinasedataxout<-reactive({
     library(ggraph)
     library(ggrepel)
@@ -3278,7 +3280,7 @@ server <- function(input, output,session) {
         SubstrateNum[j]<-N4
         Direction[j]<-ifelse(N4/nrow(x2)>nrow(Bg.KSj)/N.total,"greater","less")
         Substrates[j]<-paste(Bg.Q.inter,collapse = "/")
-        
+
         incProgress(1, detail = paste("index", j))#/length(PsP.kinases.id)
       }
     })
@@ -3290,7 +3292,7 @@ server <- function(input, output,session) {
     datareaddqblast3<-Segments.KS.enrich[Segments.KS.enrich$SubstrateNum!=0,c(1:7,9,8)]
     datareaddqblast3[order(datareaddqblast3$P.adj),]
   })
-  
+
   observeEvent(
     input$mcsbtn_kniase,{
       shinyjs::show(id = "hiddendiv9", anim = FALSE)
@@ -3422,8 +3424,8 @@ server <- function(input, output,session) {
               theme_graph(base_family="sans")
           }
         }else{
-          ggplot() + 
-            annotate("text", x = 4, y = 25, size=6,col="red", label = 'The uploaded peptides are not Human. Please try \n "Blasted peptide annotation" for the kinase library annotation.') + 
+          ggplot() +
+            annotate("text", x = 4, y = 25, size=6,col="red", label = 'The uploaded peptides are not Human. Please try \n "Blasted peptide annotation" for the kinase library annotation.') +
             theme_void()
         }
         #if(nrow(edgesdf)<=200){
@@ -3473,8 +3475,8 @@ server <- function(input, output,session) {
               theme_graph(base_family="sans")
           }
         }else{
-          ggplot() + 
-            annotate("text", x = 4, y = 25, size=6,col="red", label = 'The uploaded peptides are not Human. Please try \n "Blasted peptide annotation" for the kinase library annotation.') + 
+          ggplot() +
+            annotate("text", x = 4, y = 25, size=6,col="red", label = 'The uploaded peptides are not Human. Please try \n "Blasted peptide annotation" for the kinase library annotation.') +
             theme_void()
         }
         #if(nrow(edgesdf)<=200){
@@ -3663,7 +3665,7 @@ server <- function(input, output,session) {
     }else{
       sarsproteinsx<<-input$sarsproteins
     }
-    
+
     if(input$loaddatatype==1){
       sarsdata<-interactiondataout()
       blastresoutx<-blastresout2()
@@ -3787,12 +3789,12 @@ server <- function(input, output,session) {
          edge.width=2)
     legend(x = "bottomleft",legend = c(sarsdatanames[1],sarsdatanames[3]),pch = c(15,16),
            col = c(sarscolx,humanprocolx),bty = "n")#"SARS-CoV-2","Human"
-    gradientLegend(valRange=c(min(phositedata),max(phositedata)), 
+    gradientLegend(valRange=c(min(phositedata),max(phositedata)),
                    color=mypal,
                    border.col=NA,
                    pos=.5,pos.num=1,depth=0.03,
                    side=1,inside=TRUE)
-    legend.pie(-1,1,labels=rev(colnames(phositedata)), radius=0.1, bty="n", cex=0.8, 
+    legend.pie(-1,1,labels=rev(colnames(phositedata)), radius=0.1, bty="n", cex=0.8,
                col="white",label.dist=1.3)
   },height=interactfigheightx,width = interactfigwidthx)
   interactplotout<-reactive({
@@ -3920,12 +3922,12 @@ server <- function(input, output,session) {
          edge.width=2)
     legend(x = "bottomleft",legend = c(sarsdatanames[1],sarsdatanames[3]),pch = c(15,16),
            col = c(sarscolx,humanprocolx),bty = "n")#"SARS-CoV-2","Human"
-    gradientLegend(valRange=c(min(phositedata),max(phositedata)), 
+    gradientLegend(valRange=c(min(phositedata),max(phositedata)),
                    color=mypal,
                    border.col=NA,
                    pos=.5,pos.num=1,depth=0.03,
                    side=1,inside=TRUE)
-    legend.pie(-1,1,labels=rev(colnames(phositedata)), radius=0.1, bty="n", cex=0.8, 
+    legend.pie(-1,1,labels=rev(colnames(phositedata)), radius=0.1, bty="n", cex=0.8,
                col="white",label.dist=1.3)
   })
   output$interactplotdl<-downloadHandler(
