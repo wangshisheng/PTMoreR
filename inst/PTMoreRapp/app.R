@@ -3786,7 +3786,7 @@ server <- function(input, output,session) {
          vertex.pie=pievalueslist,
          vertex.pie.color=pievaluescollist,
          vertex.label.dist=1.5,
-         edge.width=2)
+         edge.width=2,layout = layout_with_kk)
     legend(x = "bottomleft",legend = c(sarsdatanames[1],sarsdatanames[3]),pch = c(15,16),
            col = c(sarscolx,humanprocolx),bty = "n")#"SARS-CoV-2","Human"
     gradientLegend(valRange=c(min(phositedata),max(phositedata)),
@@ -3919,7 +3919,7 @@ server <- function(input, output,session) {
          vertex.pie=pievalueslist,
          vertex.pie.color=pievaluescollist,
          vertex.label.dist=1.5,
-         edge.width=2)
+         edge.width=2,layout = layout_with_kk)
     legend(x = "bottomleft",legend = c(sarsdatanames[1],sarsdatanames[3]),pch = c(15,16),
            col = c(sarscolx,humanprocolx),bty = "n")#"SARS-CoV-2","Human"
     gradientLegend(valRange=c(min(phositedata),max(phositedata)),
